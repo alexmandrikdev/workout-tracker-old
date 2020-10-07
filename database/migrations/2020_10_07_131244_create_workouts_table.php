@@ -17,6 +17,7 @@ class CreateWorkoutsTable extends Migration
             $table->id();
             $table->string('name', 50);
             $table->foreignId('day_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->softDeletes();
             $table->timestamps();
         });

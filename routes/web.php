@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('layouts.app');
+Route::group(['middleware' => 'auth'], function () {
+
+    Route::redirect('/', 'workouts');
+
+    Route::get('workouts', function () {
+        return view('layouts.app');
+    });
+
 });

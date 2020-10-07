@@ -6,11 +6,14 @@
 
         <div class="dropdown">
             <button class="btn btn-transparent text-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Profile
+                {{ Auth::user()->name }}
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
             <a class="dropdown-item" href="#">@lang('Change password')</a>
-            <a class="dropdown-item" href="#">@lang('Logout')</a>
+            <form action="/logout" method="POST">
+                @csrf
+                <input class="dropdown-item" type="submit" value="@lang('Logout')">
+            </form>
             </div>
         </div>
 
