@@ -16,7 +16,6 @@ class CreateWorkoutsTable extends Migration
         Schema::create('workouts', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
-            $table->foreignId('day_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->softDeletes();
             $table->timestamps();
