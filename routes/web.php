@@ -1,24 +1,24 @@
 <?php
 
+use App\Http\Controllers\WorkoutImportController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::group(['middleware' => 'auth'], function () {
 
     Route::redirect('/', 'workouts');
 
-    Route::get('workouts', function () {
-        return view('layouts.app');
+    Route::group(['prefix' => 'workouts', 'as' => 'workouts.'], function () {
+        Route::get('workouts', function () {
+            return view('layouts.app');
+        });
+
+        Route::group(['prefix' => 'import', 'as' => 'import.'], function () {
+            Route::get('/', [WorkoutImportController::class, 'importView']);
+
+            Route::post('get-sheets', [WorkoutImportController::class, 'getSheets'])->name('getSheets');
+        });
     });
 
 });
+
+
