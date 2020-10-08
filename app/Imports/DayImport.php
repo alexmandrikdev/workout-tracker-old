@@ -36,7 +36,7 @@ class DayImport implements ToCollection
         {
             foreach($rows as $rowIndex => $row)
             {
-                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0))
+                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0) && $this->workouts->contains($row[0]))
                 {
                     $workout = Workout::updateOrCreate([
                         'name' => $row[0],
