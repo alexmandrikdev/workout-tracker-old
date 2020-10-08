@@ -8,6 +8,7 @@ use App\Imports\SheetNamesImport;
 use App\Imports\WorkoutsImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class WorkoutImportController extends Controller
@@ -30,9 +31,9 @@ class WorkoutImportController extends Controller
                 (\d{2}' . $dateDelimeters . '\d{2}' . $dateDelimeters . '\d{4}))', $day);
         });
 
-        $daysImport = new DaysImport($days, true);
+        $daysImport = new DaysImport($days);
 
-        Excel::import($daysImport, $request->file('excel'));
+        Excel::import($daysImport, $excelPath);
 
         $days = $daysImport->getDays();
 
@@ -41,7 +42,7 @@ class WorkoutImportController extends Controller
 
     public function import(Request $request)
     {
-        return $request;
+        // return $request;
 
         $days = $request->days;
         $dayStatuses = collect();
@@ -64,6 +65,18 @@ class WorkoutImportController extends Controller
             return [$days[$dayKey] => $dayWorkouts];
         });
 
-        return $days;
+        $sheetNames = collect($request->days)->filter(function($day, $dayKey) use ($request) {
+            return $request->get('day' . $dayKey . 'Status') == 'on';
+        });
+
+        $days = $days->collapse();
+
+        $daysImport = new DaysImport($sheetNames, $days);
+
+        Excel::import($daysImport, $request->excelPath);
+
+        // Storage::delete($request->excelPath);
+
+        return 200;
     }
 }

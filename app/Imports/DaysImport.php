@@ -13,14 +13,16 @@ class DaysImport implements WithMultipleSheets, WithEvents
     private $sheetNames;
     private $dayImports;
     private $days;
-    private $importOnlyWorkoutNames;
 
-    public function __construct($sheetNames, $importOnlyWorkoutNames = false)
+    public function __construct($sheetNames, $days = [])
     {
         $this->sheetNames = $sheetNames;
-        $this->importOnlyWorkoutNames = $importOnlyWorkoutNames;
-        $this->days = collect();
-        $this->dayImports = collect();
+        $this->days = collect($days);
+
+        if($this->days->isEmpty())
+        {
+            $this->dayImports = collect();
+        }
 
     }
 
@@ -30,9 +32,16 @@ class DaysImport implements WithMultipleSheets, WithEvents
 
         foreach($this->sheetNames as $sheetName)
         {
-            $this->dayImports->push(new DayImport($sheetName, $this->importOnlyWorkoutNames));
+            $day = $this->days->isNotEmpty() ? $this->days[$sheetName] : [];
 
-            $imports[$sheetName] = $this->dayImports->last();
+            $dayImport = new DayImport($sheetName, $day);
+
+            if($this->days->isEmpty())
+            {
+                $this->dayImports->push($dayImport);
+            }
+
+            $imports[$sheetName] = $dayImport;
         }
 
         return $imports;
@@ -40,14 +49,18 @@ class DaysImport implements WithMultipleSheets, WithEvents
 
     public function registerEvents(): array
     {
-        return [
-            AfterImport::class => function(AfterImport $event) {
-                foreach($this->dayImports as $dayImport)
-                {
-                    $this->days[$dayImport->getSheetName()] = $dayImport->getWorkouts();
+        if($this->days->isEmpty())
+        {
+            return [
+                AfterImport::class => function(AfterImport $event) {
+                    foreach($this->dayImports as $dayImport)
+                    {
+                        $this->days[$dayImport->getSheetName()] = $dayImport->getWorkouts();
+                    }
                 }
-            }
-        ];
+            ];
+        }
+        return [];
     }
 
     public function getDays(): Collection

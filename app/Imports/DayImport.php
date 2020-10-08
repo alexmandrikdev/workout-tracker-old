@@ -2,37 +2,50 @@
 
 namespace App\Imports;
 
+use App\Models\Day;
+use App\Models\Workout;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Str;
 
 class DayImport implements ToCollection
 {
-    private $workouts;
     private $sheetName;
-    private $importOnlyWorkoutNames;
+    private $workouts;
 
-    public function __construct($sheetName, $importOnlyWorkoutNames)
+    public function __construct($sheetName, $workouts)
     {
-        $this->workouts = collect();
+        $this->workouts = collect($workouts);
         $this->sheetName = $sheetName;
-        $this->importOnlyWorkoutNames = $importOnlyWorkoutNames;
     }
 
     public function collection(Collection $rows)
     {
-        foreach($rows as $key => $row)
+        if($this->workouts->isEmpty())
         {
-            if($this->importOnlyWorkoutNames)
+            foreach($rows as $rowIndex => $row)
             {
-                if(isset($rows[$key + 1][0]) && Str::lower($rows[$key + 1][0]) == 'exercise')
+                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0))
                 {
                     $this->workouts->push($row[0]);
                 }
             }
-            else
-            {
+        }
+        else
+        {
+            $day = Day::updateOrCreate(['date' => $this->sheetName]);
 
+            foreach($rows as $rowIndex => $row)
+            {
+                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0))
+                {
+                    $workout = Workout::updateOrCreate([
+                        'name' => $row[0],
+                        'day_id' => $day['id'],
+                        'user_id' => Auth::id(),
+                    ]);
+                }
             }
         }
     }
@@ -45,5 +58,9 @@ class DayImport implements ToCollection
     public function getSheetName()
     {
         return $this->sheetName;
+    }
+
+    private function thisColumnIsWorkoutName($rows, $rowIndex, $colIndex){
+        return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
     }
 }
