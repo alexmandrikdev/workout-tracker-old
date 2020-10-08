@@ -7,6 +7,7 @@ use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
 use App\Imports\WorkoutsImport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class WorkoutImportController extends Controller
@@ -15,7 +16,8 @@ class WorkoutImportController extends Controller
     {
         $sheetNamesImport = new SheetNamesImport();
 
-        $excelPath = $request->file('excel')->store('excels');
+        $file = $request->file('excel');
+        $excelPath = $file->storeAs('excels', Auth::id() . '.' . $file->extension());
 
         Excel::import($sheetNamesImport, $excelPath);
 
@@ -39,7 +41,7 @@ class WorkoutImportController extends Controller
 
     public function import(Request $request)
     {
-        // return $request;
+        return $request;
 
         $days = $request->days;
         $dayStatuses = collect();
