@@ -13,8 +13,9 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         Route::group(['prefix' => 'import', 'as' => 'import.'], function () {
-            Route::get('/', [WorkoutImportController::class, 'importView']);
+            Route::view('/', 'workouts.import');
 
+            Route::post('/', [WorkoutImportController::class, 'import']);
             Route::post('get-sheets', [WorkoutImportController::class, 'getSheets'])->name('getSheets');
         });
     });

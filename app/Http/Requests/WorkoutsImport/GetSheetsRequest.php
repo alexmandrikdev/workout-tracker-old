@@ -24,7 +24,7 @@ class GetSheetsRequest extends FormRequest
     public function rules()
     {
         return [
-            'excel' => 'file|mimes:xlsx',
+            'excel' => 'required|file|mimes:xlsx',
         ];
     }
 }

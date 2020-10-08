@@ -11,18 +11,13 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class WorkoutImportController extends Controller
 {
-    public function importView(Request $request)
-    {
-        $sheets = null;
-
-        return view('workouts.import', compact('sheets'));
-    }
-
     public function getSheets(GetSheetsRequest $request)
     {
         $sheetNamesImport = new SheetNamesImport();
 
-        Excel::import($sheetNamesImport, $request->file('excel'));
+        $excelPath = $request->file('excel')->store('excels');
+
+        Excel::import($sheetNamesImport, $excelPath);
 
         $days = $sheetNamesImport->getSheetNames();
 
@@ -33,10 +28,40 @@ class WorkoutImportController extends Controller
                 (\d{2}' . $dateDelimeters . '\d{2}' . $dateDelimeters . '\d{4}))', $day);
         });
 
-        $daysImport = new DaysImport($days);
+        $daysImport = new DaysImport($days, true);
 
         Excel::import($daysImport, $request->file('excel'));
 
-        return $daysImport->getDays();
+        $days = $daysImport->getDays();
+
+        return back()->with(['days' => $days, 'excelPath' => $excelPath]);
+    }
+
+    public function import(Request $request)
+    {
+        // return $request;
+
+        $days = $request->days;
+        $dayStatuses = collect();
+
+        for($i = 0; $i < $request->daysCount; $i++)
+        {
+            if($request->get('day' . $i . 'Status'))
+            {
+                $dayStatuses[$i] = $request->get('day' . $i . 'Status');
+            }
+        }
+
+        $days = $dayStatuses->map(function($day, $dayKey) use ($days, $request) {
+            $dayWorkouts = collect($request->get('day' . $dayKey . 'Workouts'))
+                ->filter(function($dayWorkout, $dayWorkoutKey) use ($dayKey, $request) {
+                    return $request->get('day' . $dayKey . 'Workout' . $dayWorkoutKey . 'Status') == 'on';
+                })
+                ->values();
+
+            return [$days[$dayKey] => $dayWorkouts];
+        });
+
+        return $days;
     }
 }

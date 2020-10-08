@@ -10,26 +10,40 @@ class DayImport implements ToCollection
 {
     private $workouts;
     private $sheetName;
+    private $importOnlyWorkoutNames;
 
-    public function __construct($sheetName)
+    public function __construct($sheetName, $importOnlyWorkoutNames)
     {
         $this->workouts = collect();
         $this->sheetName = $sheetName;
+        $this->importOnlyWorkoutNames = $importOnlyWorkoutNames;
     }
 
     public function collection(Collection $rows)
     {
         foreach($rows as $key => $row)
         {
-            if(isset($rows[$key + 1][0]) && Str::lower($rows[$key + 1][0]) == 'exercise')
+            if($this->importOnlyWorkoutNames)
             {
-                $this->workouts->push($row[0]);
+                if(isset($rows[$key + 1][0]) && Str::lower($rows[$key + 1][0]) == 'exercise')
+                {
+                    $this->workouts->push($row[0]);
+                }
+            }
+            else
+            {
+
             }
         }
     }
 
     public function getWorkouts()
     {
-        return [$this->sheetName => $this->workouts];
+        return $this->workouts;
+    }
+
+    public function getSheetName()
+    {
+        return $this->sheetName;
     }
 }

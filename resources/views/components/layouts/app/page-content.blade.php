@@ -19,7 +19,7 @@
 
     </nav>
 
-    <div class="container-fluid">
+    <div>
         {{ $slot }}
     </div>
 </div>

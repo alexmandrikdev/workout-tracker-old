@@ -13,10 +13,12 @@ class DaysImport implements WithMultipleSheets, WithEvents
     private $sheetNames;
     private $dayImports;
     private $days;
+    private $importOnlyWorkoutNames;
 
-    public function __construct($sheetNames)
+    public function __construct($sheetNames, $importOnlyWorkoutNames = false)
     {
         $this->sheetNames = $sheetNames;
+        $this->importOnlyWorkoutNames = $importOnlyWorkoutNames;
         $this->days = collect();
         $this->dayImports = collect();
 
@@ -28,7 +30,7 @@ class DaysImport implements WithMultipleSheets, WithEvents
 
         foreach($this->sheetNames as $sheetName)
         {
-            $this->dayImports->push(new DayImport($sheetName));
+            $this->dayImports->push(new DayImport($sheetName, $this->importOnlyWorkoutNames));
 
             $imports[$sheetName] = $this->dayImports->last();
         }
@@ -42,7 +44,7 @@ class DaysImport implements WithMultipleSheets, WithEvents
             AfterImport::class => function(AfterImport $event) {
                 foreach($this->dayImports as $dayImport)
                 {
-                    $this->days->push($dayImport->getWorkouts());
+                    $this->days[$dayImport->getSheetName()] = $dayImport->getWorkouts();
                 }
             }
         ];
