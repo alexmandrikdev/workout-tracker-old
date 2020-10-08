@@ -34,16 +34,14 @@ class DayImport implements ToCollection
         }
         else
         {
-            $day = Day::updateOrCreate(['date' => $this->sheetName]);
-
             foreach($rows as $rowIndex => $row)
             {
                 if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0))
                 {
                     $workout = Workout::updateOrCreate([
                         'name' => $row[0],
-                        'day_id' => $day['id'],
                         'user_id' => Auth::id(),
+                        'date' => $this->sheetName
                     ]);
                 }
             }
