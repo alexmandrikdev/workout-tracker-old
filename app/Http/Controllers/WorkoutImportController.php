@@ -26,7 +26,7 @@ class WorkoutImportController extends Controller
 
         $dateDelimeters = '(\.|-|/)';
 
-        $days = $days->filter(function($day) use ($dateDelimeters) {
+        $days = $days->filter(function ($day) use ($dateDelimeters) {
             return preg_match('((\d{4}' . $dateDelimeters . '\d{2}' . $dateDelimeters . '\d{2})|
                 (\d{2}' . $dateDelimeters . '\d{2}' . $dateDelimeters . '\d{4}))', $day);
         });
@@ -42,22 +42,20 @@ class WorkoutImportController extends Controller
 
     public function import(Request $request)
     {
-        // return $request;
+        return $request;
 
         $days = $request->days;
         $dayStatuses = collect();
 
-        for($i = 0; $i < $request->daysCount; $i++)
-        {
-            if($request->get('day' . $i . 'Status'))
-            {
+        for ($i = 0; $i < $request->daysCount; $i++) {
+            if ($request->get('day' . $i . 'Status')) {
                 $dayStatuses[$i] = $request->get('day' . $i . 'Status');
             }
         }
 
-        $days = $dayStatuses->map(function($day, $dayKey) use ($days, $request) {
+        $days = $dayStatuses->map(function ($day, $dayKey) use ($days, $request) {
             $dayWorkouts = collect($request->get('day' . $dayKey . 'Workouts'))
-                ->filter(function($dayWorkout, $dayWorkoutKey) use ($dayKey, $request) {
+                ->filter(function ($dayWorkout, $dayWorkoutKey) use ($dayKey, $request) {
                     return $request->get('day' . $dayKey . 'Workout' . $dayWorkoutKey . 'Status') == 'on';
                 })
                 ->values();
@@ -65,7 +63,7 @@ class WorkoutImportController extends Controller
             return [$days[$dayKey] => $dayWorkouts];
         });
 
-        $sheetNames = collect($request->days)->filter(function($day, $dayKey) use ($request) {
+        $sheetNames = collect($request->days)->filter(function ($day, $dayKey) use ($request) {
             return $request->get('day' . $dayKey . 'Status') == 'on';
         });
 

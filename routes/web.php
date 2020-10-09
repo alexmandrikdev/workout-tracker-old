@@ -19,7 +19,4 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('get-sheets', [WorkoutImportController::class, 'getSheets'])->name('getSheets');
         });
     });
-
 });
-
-

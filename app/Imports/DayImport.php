@@ -22,22 +22,15 @@ class DayImport implements ToCollection
 
     public function collection(Collection $rows)
     {
-        if($this->workouts->isEmpty())
-        {
-            foreach($rows as $rowIndex => $row)
-            {
-                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0))
-                {
+        if ($this->workouts->isEmpty()) {
+            foreach ($rows as $rowIndex => $row) {
+                if ($this->thisColumnIsWorkoutName($rows, $rowIndex, 0)) {
                     $this->workouts->push($row[0]);
                 }
             }
-        }
-        else
-        {
-            foreach($rows as $rowIndex => $row)
-            {
-                if($this->thisColumnIsWorkoutName($rows, $rowIndex, 0) && $this->workouts->contains($row[0]))
-                {
+        } else {
+            foreach ($rows as $rowIndex => $row) {
+                if ($this->thisColumnIsWorkoutName($rows, $rowIndex, 0) && $this->workouts->contains($row[0])) {
                     $workout = Workout::updateOrCreate([
                         'name' => $row[0],
                         'user_id' => Auth::id(),
@@ -58,7 +51,8 @@ class DayImport implements ToCollection
         return $this->sheetName;
     }
 
-    private function thisColumnIsWorkoutName($rows, $rowIndex, $colIndex){
+    private function thisColumnIsWorkoutName($rows, $rowIndex, $colIndex)
+    {
         return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
     }
 }

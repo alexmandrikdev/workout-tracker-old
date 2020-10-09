@@ -19,25 +19,21 @@ class DaysImport implements WithMultipleSheets, WithEvents
         $this->sheetNames = $sheetNames;
         $this->days = collect($days);
 
-        if($this->days->isEmpty())
-        {
+        if ($this->days->isEmpty()) {
             $this->dayImports = collect();
         }
-
     }
 
     public function sheets(): array
     {
         $imports = [];
 
-        foreach($this->sheetNames as $sheetName)
-        {
+        foreach ($this->sheetNames as $sheetName) {
             $day = $this->days->isNotEmpty() ? $this->days[$sheetName] : [];
 
             $dayImport = new DayImport($sheetName, $day);
 
-            if($this->days->isEmpty())
-            {
+            if ($this->days->isEmpty()) {
                 $this->dayImports->push($dayImport);
             }
 
@@ -49,12 +45,10 @@ class DaysImport implements WithMultipleSheets, WithEvents
 
     public function registerEvents(): array
     {
-        if($this->days->isEmpty())
-        {
+        if ($this->days->isEmpty()) {
             return [
-                AfterImport::class => function(AfterImport $event) {
-                    foreach($this->dayImports as $dayImport)
-                    {
+                AfterImport::class => function (AfterImport $event) {
+                    foreach ($this->dayImports as $dayImport) {
                         $this->days[$dayImport->getSheetName()] = $dayImport->getWorkouts();
                     }
                 }
