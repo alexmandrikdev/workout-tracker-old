@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\WorkoutImportController;
+use App\Models\WorkoutXExercise;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'auth'], function () {
@@ -8,7 +9,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::redirect('/', 'workouts');
 
     Route::group(['prefix' => 'workouts', 'as' => 'workouts.'], function () {
-        Route::get('workouts', function () {
+        Route::get('/', function () {
             return view('layouts.app');
         });
 

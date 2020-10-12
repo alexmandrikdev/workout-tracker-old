@@ -2,6 +2,12 @@
 
 @section('content')
     <div class="m-3">
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
         @if (!session('days'))
             <form action="{{ route('workouts.import.getSheets') }}" method="POST" enctype="multipart/form-data">
                 @csrf

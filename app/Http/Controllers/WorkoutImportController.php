@@ -6,6 +6,7 @@ use App\Http\Requests\WorkoutsImport\GetSheetsRequest;
 use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
 use App\Imports\WorkoutsImport;
+use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -42,8 +43,6 @@ class WorkoutImportController extends Controller
 
     public function import(Request $request)
     {
-        return $request;
-
         $days = $request->days;
         $dayStatuses = collect();
 
@@ -73,8 +72,8 @@ class WorkoutImportController extends Controller
 
         Excel::import($daysImport, $request->excelPath);
 
-        // Storage::delete($request->excelPath);
+        Storage::delete($request->excelPath);
 
-        return 200;
+        return back()->with('status', 'Import successful');
     }
 }

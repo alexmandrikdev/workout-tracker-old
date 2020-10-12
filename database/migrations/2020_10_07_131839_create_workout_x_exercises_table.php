@@ -18,7 +18,7 @@ class CreateWorkoutXExercisesTable extends Migration
             $table->foreignId('workout_id')->constrained();
             $table->foreignId('exercise_id')->constrained();
             $table->unsignedTinyInteger('amount');
-            $table->enum('unit', ['s', 'rep', 'min', 'hour']);
+            $table->enum('unit', ['s', 'rep', 'reps', 'min', 'hour']);
             $table->timestamps();
         });
     }
