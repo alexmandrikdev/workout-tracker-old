@@ -19,7 +19,7 @@ class Workout extends Model
         'total_time_unit_id',
     ];
 
-    protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'user_id'];
 
     public function exercises()
     {
