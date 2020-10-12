@@ -97,14 +97,12 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     {
         $workout = Workout::where([
             'name' => Str::title($nameField),
-            'user_id' => Auth::id(),
             'date' => $this->sheetName
         ])->first();
 
         if (is_null($workout)) {
             $this->workout = Workout::create([
                 'name' => Str::title($nameField),
-                'user_id' => Auth::id(),
                 'date' => $this->sheetName
             ]);
             return;
@@ -130,7 +128,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     {
         $exercise = Exercise::updateOrCreate([
             'name' => Str::title($row[0]),
-            'user_id' => Auth::id(),
         ]);
 
         if (is_numeric($row[1])) {
