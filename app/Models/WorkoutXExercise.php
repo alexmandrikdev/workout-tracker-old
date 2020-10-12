@@ -14,9 +14,9 @@ class WorkoutXExercise extends Model
         'exercise_id',
         'set',
         'amount',
-        'unit',
+        'unit_id',
         'rest_amount',
-        'rest_unit'
+        'rest_unit_id'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];

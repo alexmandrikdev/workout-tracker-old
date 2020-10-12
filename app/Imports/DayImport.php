@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Day;
 use App\Models\Exercise;
+use App\Models\Unit;
 use App\Models\Workout;
 use App\Models\WorkoutXExercise;
 use Illuminate\Support\Collection;
@@ -59,7 +60,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private function import($row)
     {
         if ($this->workouts->contains(Str::title($row[0]))) {
-            $this->workout = $this->createWorkout($row[0]);
+            $this->createWorkout($row[0]);
             return;
         }
 
@@ -101,22 +102,23 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         ])->first();
 
         if (is_null($workout)) {
-            return Workout::create([
+            $this->workout = Workout::create([
                 'name' => Str::title($nameField),
                 'user_id' => Auth::id(),
                 'date' => $this->sheetName
             ]);
+            return;
         }
 
         $workout->workoutXExercises()->delete();
 
-        return $workout;
+        $this->workout = $workout;
     }
 
     private function defineUnits($row)
     {
-        $this->unit = Str::lower(Str::between($row[1], '(', ')'));
-        $this->restUnit = Str::lower(Str::between($row[2], '(', ')'));
+        $this->unit = Unit::updateOrCreate(['name' => Str::lower(Str::between($row[1], '(', ')'))]);
+        $this->restUnit = Unit::updateOrCreate(['name' => Str::lower(Str::between($row[2], '(', ')'))]);
     }
 
     private function defineSet($field, $prefix)
@@ -133,12 +135,25 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         if (is_numeric($row[1])) {
             $this->createWorkoutXExercise($exercise->id, $row[1], $row[2]);
+        } elseif (preg_match('([a-zA-Z]+)', $row[1])) {
+            preg_match('([0-9]+)', $row[1], $matches);
+            info($row[1]);
+            info($matches);
+            $amount = $matches[0];
+            preg_match('([a-zA-Z]+)', $row[1], $matches);
+            $unit = $matches[0];
+
+            $unit = Unit::updateOrCreate([
+                'name' => $unit,
+            ]);
+
+            $this->createWorkoutXExercise($exercise->id, $amount, $row[2], $unit->id);
         } else {
             $amounts = explode(' ', $row[1]);
             $restAmounts = explode(' ', $row[2]);
 
-            info($amounts);
-            info($restAmounts);
+            // info($amounts);
+            // info($restAmounts);
 
             foreach ($amounts as $index => $amount) {
                 if ($amount == '+') {
@@ -154,16 +169,18 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         }
     }
 
-    private function createWorkoutXExercise($exerciseId, $amount, $restAmount)
+    private function createWorkoutXExercise($exerciseId, $amount, $restAmount, $unitId = null)
     {
+        $unitId = is_null($unitId) ? $this->unit->id : $unitId;
+
         WorkoutXExercise::create([
             'workout_id' => $this->workout->id,
             'exercise_id' => $exerciseId,
             'set' => $this->set,
             'amount' => $amount,
-            'unit' => $this->unit,
+            'unit_id' => $unitId,
             'rest_amount' => $restAmount,
-            'rest_unit' => $this->restUnit,
+            'rest_unit_id' => $this->restUnit->id,
         ]);
     }
 
