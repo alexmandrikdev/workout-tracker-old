@@ -3,7 +3,8 @@
 @else
 <div
 @endif
-    class="day {{ !isset($day['workouts']) ? 'day-disabled' : '' }} {{ $day['date']->isCurrentDay() ? 'day-today' : '' }}">
+    class="day {{ !isset($day['workouts']) ? 'day-disabled' : '' }} {{ $day['date']->isCurrentDay() ? 'day-today' : '' }}
+    {{ isset($day['clickable']) && $day['clickable'] ? '' : 'day-not-allowed' }}">
     <div class="day-number">{{ $day['date']->day }}</div>
     @isset($day['workouts'])
         <div class="text-center">{{ $day['workouts']->join(', ') }}</div>
