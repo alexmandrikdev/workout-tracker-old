@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <div class="m-5 calendar-container bg-dark">
+    <div class="mx-0 my-5 m-sm-5 calendar-container bg-dark">
         <div class="calendar">
             @foreach ($dayNames as $dayName)
                 <span class="day-name">
