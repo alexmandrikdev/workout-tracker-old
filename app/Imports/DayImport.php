@@ -137,8 +137,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             $this->createWorkoutXExercise($exercise->id, $row[1], $row[2]);
         } elseif (preg_match('([a-zA-Z]+)', $row[1])) {
             preg_match('([0-9]+)', $row[1], $matches);
-            info($row[1]);
-            info($matches);
             $amount = $matches[0];
             preg_match('([a-zA-Z]+)', $row[1], $matches);
             $unit = $matches[0];
@@ -186,9 +184,11 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function importTotalTime($workout, $totalTime, $totalTimeUnit)
     {
+        $unit = Unit::updateOrCreate(['name' => $totalTimeUnit]);
+
         $workout->update([
             'total_time' => $totalTime,
-            'total_time_unit' => $totalTimeUnit
+            'total_time_unit_id' => $unit->id
         ]);
 
         $this->workout = null;

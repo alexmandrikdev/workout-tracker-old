@@ -15,7 +15,7 @@ class Workout extends Model
         'user_id',
         'date',
         'total_time',
-        'total_time_unit',
+        'total_time_unit_id',
     ];
 
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
