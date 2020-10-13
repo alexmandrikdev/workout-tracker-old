@@ -28,11 +28,12 @@ class WorkoutController extends Controller
                             ];
                         }),
                 ];
-            });
+            })
+            ->groupBy('date');
 
         return $workouts;
 
-        return view('workouts.index', compact('workoutNames'));
+        return view('workouts.index', compact('workoutNames', 'workouts'));
     }
 
     public function show($date)
