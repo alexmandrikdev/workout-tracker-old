@@ -22,4 +22,9 @@ class Exercise extends Model
         return $this->belongsToMany(Workout::class, 'workout_x_exercises')->withPivot('set', 'amount', 'unit_id');
     }
 
+    public function workoutExercises()
+    {
+        return $this->hasMany(WorkoutXExercise::class);
+    }
+
 }

@@ -20,4 +20,14 @@ class WorkoutXExercise extends Model
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+    public function workout()
+    {
+        return $this->belongsTo(workout::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
 }

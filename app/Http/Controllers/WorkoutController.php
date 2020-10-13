@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Exercise;
 use App\Models\Unit;
 use App\Models\Workout;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class WorkoutController extends Controller
 {
@@ -13,25 +15,36 @@ class WorkoutController extends Controller
         $workoutNames = Workout::select('name')
             ->get()->pluck('name')->unique();
 
-        $workouts = Workout::with('exercises')
+        $exercises = Exercise::with([
+            'workoutExercises:workout_id,exercise_id,amount,unit_id',
+            'workoutExercises.workout:id,name,date',
+            'workoutExercises.unit:id,name',
+        ])
             ->get()
-            ->map(function ($workout) {
+            ->map(function ($exercise) {
                 return [
-                    'name' => $workout->name,
-                    'date' => $workout->date,
-                    'exercises' => $workout->exercises->groupBy('name')
-                        ->map(function($exercise){
+                    'name' => $exercise->name,
+                    'workout_name' => $exercise->workoutExercises->first()->workout->name,
+                    'workouts' => $exercise->workoutExercises->map(function ($workoutExercise) {
+                        return [
+                            'amount' => $workoutExercise->amount,
+                            'unit' => $workoutExercise->unit->name,
+                            'date' => $workoutExercise->workout->date,
+                        ];
+                    })
+                        ->groupBy('date')
+                        ->map(function ($day) {
                             return [
-                                'amount' => $exercise->sum('pivot.amount'),
-                                'unit' => Unit::select('name')->find($exercise->first()->pivot->unit_id)->name,
-                                'sets' => $exercise->count()
+                                'amount_sum' => $day->sum('amount'),
+                                'set_count' => $day->count('amount')
                             ];
                         }),
                 ];
-            })
-            ->groupBy('date');
+            });
 
-        return $workouts;
+        $workouts = $exercises->groupBy('workout_name');
+
+        // return $workouts;
 
         return view('workouts.index', compact('workoutNames', 'workouts'));
     }
