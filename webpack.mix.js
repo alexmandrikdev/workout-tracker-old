@@ -13,4 +13,4 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/workouts/index.scss', 'public/css/workouts');
+    .sass('resources/sass/calendar/index.scss', 'public/css/calendar');

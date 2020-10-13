@@ -37342,9 +37342,9 @@ $(function () {
 
 /***/ }),
 
-/***/ "./resources/sass/workouts/index.scss":
+/***/ "./resources/sass/calendar/index.scss":
 /*!********************************************!*\
-  !*** ./resources/sass/workouts/index.scss ***!
+  !*** ./resources/sass/calendar/index.scss ***!
   \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -37355,14 +37355,14 @@ $(function () {
 
 /***/ 0:
 /*!**************************************************************************************************!*\
-  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/workouts/index.scss ***!
+  !*** multi ./resources/js/app.js ./resources/sass/app.scss ./resources/sass/calendar/index.scss ***!
   \**************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! F:\Programming\laravel\workout-tracker\resources\js\app.js */"./resources/js/app.js");
 __webpack_require__(/*! F:\Programming\laravel\workout-tracker\resources\sass\app.scss */"./resources/sass/app.scss");
-module.exports = __webpack_require__(/*! F:\Programming\laravel\workout-tracker\resources\sass\workouts\index.scss */"./resources/sass/workouts/index.scss");
+module.exports = __webpack_require__(/*! F:\Programming\laravel\workout-tracker\resources\sass\calendar\index.scss */"./resources/sass/calendar/index.scss");
 
 
 /***/ })

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\WorkoutImportController;
 use App\Models\WorkoutXExercise;
@@ -19,4 +20,6 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::resource('workouts', WorkoutController::class)->only(['index', 'show']);
+
+    Route::resource('calendar', CalendarController::class)->only(['index']);
 });

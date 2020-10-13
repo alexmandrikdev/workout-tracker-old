@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('extra-css')
-    <link rel="stylesheet" href="/css/workouts/index.css?v=1.0.1">
+    <link rel="stylesheet" href="/css/calendar/index.css?v=1.0.1">
 @endsection
 
 @section('content')
@@ -34,7 +34,7 @@
                     </span>
                 @endforeach
                 @foreach ($days as $day)
-                    @include('workouts.index.day')
+                    @include('calendar.index.day')
                 @endforeach
             </div>
         </div>
