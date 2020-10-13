@@ -61,12 +61,12 @@
         right: 0;
 
         @media (max-width: 800px) {
-            font-size: .6rem;
+            font-size: 0.6rem;
             padding: 7px 10px;
         }
 
         @media (max-width: 500px) {
-            font-size: .5rem;
+            font-size: 0.5rem;
             padding: 0;
         }
     }
@@ -89,12 +89,12 @@
         padding: 14px 20px;
 
         @media (max-width: 800px) {
-            font-size: .6rem;
+            font-size: 0.6rem;
             padding: 7px 10px;
         }
 
         @media (max-width: 500px) {
-            font-size: .5rem;
+            font-size: 0.5rem;
             padding: 0;
         }
     }
@@ -103,4 +103,8 @@
 a.day:hover {
     color: #747d85;
     text-decoration: none;
+}
+
+#date-select-form {
+    max-width: 457px;
 }

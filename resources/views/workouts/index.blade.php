@@ -1,17 +1,16 @@
 @extends('layouts.app')
 
 @section('extra-css')
-    <link rel="stylesheet" href="/css/workouts/index.css?v=1.0.0">
+    <link rel="stylesheet" href="/css/workouts/index.css?v=1.0.1">
 @endsection
 
 @section('content')
     <div class="mx-0 my-5 m-sm-5">
         <div class="mb-4">
-            <form id="date-select-form">
-                <div class="row w-50 mx-auto">
+            <form id="date-select-form" class="mx-auto">
+                <div class="row">
                     <div class="col">
                         <select id="year-select" class="custom-select" name="year">
-                            {{-- <option value="">@lang('Year')</option> --}}
                             @for ($year2 = $minWorkoutDate->year; $year2 <= $maxWorkoutDate->year; $year2++)
                                 <option {{ $year == $year2 ? 'selected' : '' }} value="{{ $year2 }}">{{ $year2 }}</option>
                             @endfor
@@ -19,7 +18,6 @@
                     </div>
                     <div class="col">
                         <select id="month-select" class="custom-select" name="month">
-                            {{-- <option value="">@lang('Month')</option> --}}
                             @foreach ($monthNames as $key => $monthName)
                                 <option {{ $key + 1 == $month ? 'selected' : '' }} value="{{ $key + 1 }}">{{ $monthName }}</option>
                             @endforeach
