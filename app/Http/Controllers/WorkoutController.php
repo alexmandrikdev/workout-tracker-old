@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Workout;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
 
 class WorkoutController extends Controller
 {
@@ -21,7 +23,8 @@ class WorkoutController extends Controller
             ->get()
             ->groupBy('date');
 
-        $minWorkoutDate = Workout::min('date');
+        $minWorkoutDate = Carbon::parse(Workout::min('date'));
+        $maxWorkoutDate = Carbon::parse(Workout::max('date'));
 
         $days = collect();
 
@@ -36,17 +39,27 @@ class WorkoutController extends Controller
                     ? $workouts[$date->toDateString()]->pluck('name')
                     : ($date->lt(now()) && $date->gte($minWorkoutDate) ? collect('Rest') : collect());
                 $day['clickable'] = isset($workouts[$date->toDateString()]);
-
             }
 
             $days->push($day);
             $date = $date->copy()->addDay();
         }
 
-        $dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        $dayNames = collect();
 
-        // return $days;
-        return view('workouts.index', compact('days', 'dayNames'));
+        for ($date=now()->startOfWeek(); $date < now()->endOfWeek(); $date->addDay()) {
+            $dayNames->push($date->locale(App::getLocale())->shortDayName);
+        }
+
+
+        $monthNames = collect();
+        for ($month = 1; $month <= 12; $month++) {
+            $monthNames->push(Str::title(Carbon::createFromDate(null, $month)->locale(App::getLocale())->monthName));
+        }
+
+        $year = $request->get('year', now()->year);
+        $month = $request->get('month', now()->month);
+        return view('workouts.index', compact('days', 'dayNames', 'monthNames', 'minWorkoutDate', 'maxWorkoutDate', 'year', 'month'));
     }
 
     public function show($date)
