@@ -19,7 +19,7 @@
 
     </nav>
 
-    <div>
+    <div class="mx-0 my-5 m-sm-5">
         {{ $slot }}
     </div>
 </div>
