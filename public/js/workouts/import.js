@@ -16,12 +16,6 @@ $('.workout-checkbox').on('change', (e) => {
     setCheckboxStatus(dayCheckbox, dayWorkouts);
 });
 
-// $('#days-form').on('submit', (e) => {
-//     const indeterminateCheckboxes = $('input[type="checkbox"]:indeterminate');
-//     indeterminateCheckboxes.prop('indeterminate', false);
-//     indeterminateCheckboxes.prop('checked', true);
-// });
-
 $('input[type="checkbox"]:not(#select-all)').on('change', (e) => {
     setCheckboxStatus($('#select-all'), $('input[type="checkbox"]:not(#select-all)'));
 });
