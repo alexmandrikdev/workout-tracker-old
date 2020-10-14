@@ -41,9 +41,8 @@
                     </div>
                 </form>
             </div>
-            <div class="card-footer d-flex justify-content-between align-items-center">
-                @lang("Don't have and account?")
-                <a class="btn btn-secondary" href="/register">@lang('Registration')</a>
+            <div class="card-footer text-center">
+                <a class="text-decoration-none text-light" href="/register">@lang("Don't have and account?")</a>
             </div>
         </div>
     </div>
