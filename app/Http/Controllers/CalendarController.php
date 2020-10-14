@@ -45,7 +45,7 @@ class CalendarController extends Controller
                     }
 
                     $day['workouts'] = $workoutNames;
-                } elseif ($date->lt(now()) && $date->gte($minWorkoutDate)) {
+                } elseif ($date->lt(Carbon::yesterday()) && $date->gte($minWorkoutDate)) {
                     $day['workouts'] = collect('Rest');
                 } else {
                     $day['workouts'] = collect();
