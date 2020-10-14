@@ -8,7 +8,7 @@
             class="dropdown-toggle collapsed list-group-item list-group-item-action bg-dark text-light">@lang('My Workouts')</a>
             <div id="workouts" class="collapse {{ isset($workoutNameFilter) ? 'show' : '' }} list-group">
                 @foreach ($workoutNames as $workoutName)
-                    <a href="/calendar?workout_name={{ $workoutName }}"
+                    <a href="/calendar?workout_name={{ $workoutName }}{{ isset($year) ? '&year=' . $year : '' }}{{ isset($month) ? '&month=' . $month : '' }}"
                         class="list-group-item list-group-item-action bg-dark text-light
                             {{ isset($workoutNameFilter) && $workoutNameFilter == $workoutName ? 'active' : '' }}"
                     >{{ $workoutName }}</a>
