@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WorkoutsImport\GetSheetsRequest;
 use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
-use App\Imports\WorkoutsImport;
-use App\Models\Exercise;
+use App\Models\Workout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class WorkoutImportController extends Controller
 {
@@ -37,6 +37,25 @@ class WorkoutImportController extends Controller
         Excel::import($daysImport, $excelPath);
 
         $days = $daysImport->getDays();
+
+        $days = $days->map(function ($workouts, $date) {
+            return $workouts->map(function ($workout) use ($date) {
+                return [
+                    'name' => $workout,
+                    'isImported' => Workout::where([
+                        'date' => $date,
+                        'name' => Str::title($workout)
+                    ])
+                        ->exists()
+                ];
+            });
+        });
+
+        $importedDays = $days->filter(function($workouts){
+            return $workouts->count() == $workouts->where('isImported', true)->count();
+        });
+
+        $days = $days->diff($importedDays);
 
         return back()->with(['days' => $days, 'excelPath' => $excelPath]);
     }
