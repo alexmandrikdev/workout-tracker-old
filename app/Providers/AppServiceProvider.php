@@ -25,8 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $workoutNames = Workout::select('name')->get()->pluck('name')->unique();
+        view()->composer('*', function($view){
+            $workoutNames = Workout::all()->pluck('name')->unique();
 
-        view()->share('workoutNames', $workoutNames);
+            $view->with('workoutNames', $workoutNames);
+        });
     }
 }
