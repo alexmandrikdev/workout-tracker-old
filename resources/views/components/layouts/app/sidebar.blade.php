@@ -6,7 +6,7 @@
             class="dropdown-toggle collapsed list-group-item list-group-item-action bg-dark text-light">@lang('My Workouts')</a>
             <div id="workouts" class="collapse list-group">
                 @foreach ($workoutNames as $workoutName)
-                    <a href="#" class="list-group-item list-group-item-action bg-dark text-light">{{ $workoutName }}</a>
+                    <a href="/calendar?wokout_name={{ $workoutName }}" class="list-group-item list-group-item-action bg-dark text-light">{{ $workoutName }}</a>
                 @endforeach
             </div>
         <a href="/workouts/import" class="list-group-item list-group-item-action bg-dark text-light">@lang('Import Workouts')</a>
