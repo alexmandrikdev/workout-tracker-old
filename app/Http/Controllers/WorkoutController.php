@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Exercise;
 use App\Models\Unit;
 use App\Models\Workout;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -14,6 +15,16 @@ class WorkoutController extends Controller
     {
         $workoutNames = Workout::select('name')
             ->get()->pluck('name')->unique();
+
+        $workoutDateMin = Carbon::parse(Workout::min('date'));
+        $workoutDateMax = Carbon::parse(Workout::max('date'));
+
+        $chartLabels = collect();
+
+        while ($workoutDateMin->lte($workoutDateMax)) {
+            $chartLabels->push($workoutDateMin->toDateString());
+            $workoutDateMin->addDay();
+        }
 
         $exercises = Exercise::with([
             'workoutExercises:workout_id,exercise_id,amount,unit_id',
@@ -46,7 +57,7 @@ class WorkoutController extends Controller
 
         // return $workouts;
 
-        return view('workouts.index', compact('workoutNames', 'workouts'));
+        return view('workouts.index', compact('workoutNames', 'workouts', 'chartLabels'));
     }
 
     public function show($date)
