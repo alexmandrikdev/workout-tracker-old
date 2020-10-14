@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('extra-css')
+    <link rel="stylesheet" href="/css/import.css">
+@endsection
+
 @section('content')
     @if (session('status'))
         <div class="alert alert-success">
@@ -20,7 +24,7 @@
         <form id="days-form" action="/workouts/import" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="excelPath" value="{{ session('excelPath') }}">
-            <table class="table table-dark text-center">
+            <table class="table table-dark text-center mb-0">
                 <thead>
                     <tr>
                         <th>@lang('Date')</th>
@@ -34,28 +38,35 @@
                     @endphp
                     @foreach (session('days') as $date => $workouts)
                         <input type="hidden" name="days[]" value="{{ $date }}">
-                        <tr>
-                            <td>{{ $date }}</td>
-                            <td>
-                                @foreach ($workouts as $workoutKey => $workout)
-                                <input type="hidden" name="day{{ $key }}Workouts[]" value="{{ $workout['name'] }}">
-                                <input type="checkbox" name="day{{ $key }}Workout{{ $workoutKey }}Status"
-                                    class="workout-checkbox day-{{ $key }}-workouts" data-parent-id="{{ $key }}">
-                                <span class="{{ $workout['isImported'] ? 'text-danger' : '' }}">{{ $workout['name'] }}</span>
-                                @endforeach
-                            </td>
-                            <td>
-                                <input type="checkbox" class="day-checkbox" id="day-{{ $key }}-checkbox" data-id="{{ $key }}"
-                                    name="day{{ $key }}Status">
-                            </td>
-                        </tr>
+                        @include('import.day')
                         @php
                             $key++
                         @endphp
                     @endforeach
                 </tbody>
             </table>
-            <div class="text-center">
+            @if (session('importedDays')->isNotEmpty())
+                <div class="bg-dark p-3 text-center" id="imported-days-toggle-button">
+                    <a href="#imported-days" class="dropdown-toggle collapsed text-decoration-none text-white" data-toggle="collapse">@lang('Imported Days')</a>
+                </div>
+                <div id="imported-days" class="collapse">
+                    <table class="table table-dark text-center text-danger">
+                        <tbody>
+                            @php
+                            $key = 0
+                            @endphp
+                            @foreach (session('importedDays') as $date => $workouts)
+                                <input type="hidden" name="days[]" value="{{ $date }}">
+                                @include('import.day')
+                                @php
+                                    $key++
+                                @endphp
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+            <div class="text-center mt-3">
                 <input type="submit" value="@lang('Import')" class="btn btn-secondary">
             </div>
         </form>

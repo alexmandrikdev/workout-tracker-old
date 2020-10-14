@@ -57,7 +57,7 @@ class WorkoutImportController extends Controller
 
         $days = $days->diff($importedDays);
 
-        return back()->with(['days' => $days, 'excelPath' => $excelPath]);
+        return back()->with(['days' => $days, 'importedDays' => $importedDays, 'excelPath' => $excelPath]);
     }
 
     public function import(Request $request)

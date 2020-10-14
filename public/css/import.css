@@ -1,0 +1,12 @@
+#imported-days-toggle-button{
+    border-bottom: 2px solid #454d55;
+    border-top: 2px solid #454d55;
+}
+
+tr td {
+    width: 47%;
+}
+
+tr td:last-child {
+    width: 6%;
+}
