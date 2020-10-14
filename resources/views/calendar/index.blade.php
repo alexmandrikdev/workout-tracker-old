@@ -7,6 +7,9 @@
 @section('content')
     <div class="mb-4">
         <form id="date-select-form" class="mx-auto">
+            @isset($workoutName)
+                <input type="hidden" name="workout_name" value="{{ $workoutName }}">
+            @endisset
             <div class="row">
                 <div class="col">
                     <select id="year-select" class="custom-select" name="year">

@@ -35,19 +35,34 @@ class CalendarController extends Controller
             $day['date'] = $date;
 
             if ($date->month == $month) {
-                $day['workouts'] = isset($workouts[$date->toDateString()])
-                    ? $workouts[$date->toDateString()]->pluck('name')
-                    : ($date->lt(now()) && $date->gte($minWorkoutDate) ? collect('Rest') : collect());
-                $day['clickable'] = isset($workouts[$date->toDateString()]);
+                if (isset($workouts[$date->toDateString()])) {
+                    $workoutNames = $workouts[$date->toDateString()]->pluck('name');
+
+                    if (request('workout_name')) {
+                        $workoutNames = $workoutNames->filter(function ($value) {
+                            return $value == request('workout_name');
+                        });
+                    }
+
+                    $day['workouts'] = $workoutNames;
+                } elseif ($date->lt(now()) && $date->gte($minWorkoutDate)) {
+                    $day['workouts'] = collect('Rest');
+                } else {
+                    $day['workouts'] = collect();
+                }
+
+                $day['clickable'] = $day['workouts']->isNotEmpty() && !$day['workouts']->contains('Rest');
             }
 
             $days->push($day);
             $date = $date->copy()->addDay();
         }
 
+        // return $days;
+
         $dayNames = collect();
 
-        for ($date=now()->startOfWeek(); $date < now()->endOfWeek(); $date->addDay()) {
+        for ($date = now()->startOfWeek(); $date < now()->endOfWeek(); $date->addDay()) {
             $dayNames->push($date->locale(App::getLocale())->shortDayName);
         }
 
@@ -59,6 +74,7 @@ class CalendarController extends Controller
 
         $year = $request->get('year', now()->year);
         $month = $request->get('month', now()->month);
-        return view('calendar.index', compact('days', 'dayNames', 'monthNames', 'minWorkoutDate', 'maxWorkoutDate', 'year', 'month'));
+        $workoutName = request('workout_name');
+        return view('calendar.index', compact('days', 'dayNames', 'monthNames', 'minWorkoutDate', 'maxWorkoutDate', 'year', 'month', 'workoutName'));
     }
 }
