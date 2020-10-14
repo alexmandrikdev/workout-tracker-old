@@ -53,7 +53,7 @@
                 <div id="imported-days-container" class="collapse">
                     <table id="imported-days" class="table table-dark text-center text-danger">
                         <thead>
-                            <tr class="bg-dark p-3 text-center" id="imported-days-toggle-button">
+                            <tr>
                                 <th>@lang('Date')</th>
                                 <th>@lang('Workouts')</th>
                                 <th><input type="checkbox" class="select-all"></th>
