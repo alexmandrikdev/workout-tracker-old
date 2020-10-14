@@ -7,7 +7,7 @@
 @section('content')
     <div class="mb-4">
         <form id="date-select-form" class="mx-auto">
-            @isset($workoutName)
+            @isset($workoutNameFilter)
                 <input type="hidden" name="workout_name" value="{{ $workoutNameFilter }}">
             @endisset
             <div class="row">
