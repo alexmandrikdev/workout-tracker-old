@@ -24,12 +24,12 @@
         <form id="days-form" action="/workouts/import" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="excelPath" value="{{ session('excelPath') }}">
-            <table class="table table-dark text-center mb-0">
+            <table id="days" class="table table-dark text-center mb-0">
                 <thead>
                     <tr>
                         <th>@lang('Date')</th>
                         <th>@lang('Workouts')</th>
-                        <th><input type="checkbox" id="select-all"></th>
+                        <th><input type="checkbox" class="select-all"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,14 +47,19 @@
             </table>
             @if (session('importedDays')->isNotEmpty())
                 <div class="bg-dark p-3 text-center" id="imported-days-toggle-button">
-                    <a href="#imported-days" class="dropdown-toggle collapsed text-decoration-none text-white" data-toggle="collapse">@lang('Imported Days')</a>
+                    <a href="#imported-days-container" class="dropdown-toggle collapsed text-decoration-none text-white w-100 d-block"
+                        data-toggle="collapse">@lang('Imported Days')</a>
                 </div>
-                <div id="imported-days" class="collapse">
-                    <table class="table table-dark text-center text-danger">
+                <div id="imported-days-container" class="collapse">
+                    <table id="imported-days" class="table table-dark text-center text-danger">
+                        <thead>
+                            <tr class="bg-dark p-3 text-center" id="imported-days-toggle-button">
+                                <th>@lang('Date')</th>
+                                <th>@lang('Workouts')</th>
+                                <th><input type="checkbox" class="select-all"></th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            @php
-                            $key = 0
-                            @endphp
                             @foreach (session('importedDays') as $date => $workouts)
                                 <input type="hidden" name="days[]" value="{{ $date }}">
                                 @include('import.day')
