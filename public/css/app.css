@@ -10944,6 +10944,16 @@ a.text-dark:focus {
   background-color: transparent;
 }
 
+.collapse.list-group .list-group-item:first-child,
+.collapsing.list-group .list-group-item:first-child {
+  border-top: 0;
+}
+
+.collapse.list-group .list-group-item,
+.collapsing.list-group .list-group-item {
+  padding-left: 2.5rem;
+}
+
 @media (min-width: 768px) {
   #sidebar-wrapper {
     margin-left: 0;

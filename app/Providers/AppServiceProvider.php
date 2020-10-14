@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Workout;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $workoutNames = Workout::select('name')->get()->pluck('name')->unique();
+
+        view()->share('workoutNames', $workoutNames);
     }
 }
