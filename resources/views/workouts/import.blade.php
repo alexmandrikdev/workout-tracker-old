@@ -53,7 +53,6 @@
                             $key++
                         @endphp
                     @endforeach
-                    <input type="hidden" name="daysCount" value="{{ $key }}">
                 </tbody>
             </table>
             <div class="text-center">
