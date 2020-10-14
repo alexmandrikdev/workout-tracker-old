@@ -69,6 +69,7 @@
             <div class="text-center mt-3">
                 <input type="submit" value="@lang('Import')" class="btn btn-secondary">
             </div>
+            <input type="hidden" name="daysCount" value="{{ $key }}">
         </form>
     @endif
 @endsection
