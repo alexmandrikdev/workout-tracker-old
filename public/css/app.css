@@ -10944,6 +10944,15 @@ a.text-dark:focus {
   background-color: transparent;
 }
 
+.list-group {
+  border-radius: 0;
+}
+
+.list-group .list-group-item.active {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: #2C3236 !important;
+}
+
 .collapse.list-group .list-group-item:first-child,
 .collapsing.list-group .list-group-item:first-child {
   border-top: 0;

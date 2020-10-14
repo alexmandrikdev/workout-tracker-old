@@ -46,6 +46,17 @@
     background-color: transparent;
 }
 
+.list-group {
+    border-radius: 0;
+
+    .list-group-item {
+        &.active {
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            background-color: #2C3236 !important;
+        }
+    }
+}
+
 .collapse, .collapsing {
     &.list-group {
         .list-group-item:first-child {

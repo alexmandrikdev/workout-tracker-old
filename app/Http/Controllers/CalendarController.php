@@ -74,7 +74,7 @@ class CalendarController extends Controller
 
         $year = $request->get('year', now()->year);
         $month = $request->get('month', now()->month);
-        $workoutName = request('workout_name');
-        return view('calendar.index', compact('days', 'dayNames', 'monthNames', 'minWorkoutDate', 'maxWorkoutDate', 'year', 'month', 'workoutName'));
+        $workoutNameFilter = request('workout_name');
+        return view('calendar.index', compact('days', 'dayNames', 'monthNames', 'minWorkoutDate', 'maxWorkoutDate', 'year', 'month', 'workoutNameFilter'));
     }
 }

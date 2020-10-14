@@ -12,15 +12,15 @@
 </head>
 
 <body>
-  <div class="d-flex" id="wrapper">
-    <x-layouts.app.sidebar/>
-    <x-layouts.app.page-content>
-        @yield('content')
-    </x-layouts.app.page-content>
-  </div>
+    <div class="d-flex" id="wrapper">
+        @include('layouts.app.sidebar')
+        <x-layouts.app.page-content>
+            @yield('content')
+        </x-layouts.app.page-content>
+    </div>
 
-  <script src="{{ asset('js/app.js') }}"></script>
-  @yield('extra-js')
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('extra-js')
 </body>
 
 </html>
