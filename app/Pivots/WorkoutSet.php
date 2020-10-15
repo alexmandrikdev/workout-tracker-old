@@ -13,7 +13,6 @@ class WorkoutSet extends Pivot
         static::creating(function ($model) {
             $maxSort = WorkoutSet::where([
                 'workout_id' => $model->workout_id,
-                'set_id' => $model->set_id,
             ])->max('sort');
 
             $model->sort = $maxSort + 1;
