@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\WorkoutSet;
 use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,4 +14,9 @@ class Workout extends Model
     protected $guarded = [];
 
     protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'user_id'];
+
+    public function sets()
+    {
+        return $this->belongsToMany(Set::class, 'workout_sets')->using(WorkoutSet::class)->withPivot('sort');
+    }
 }
