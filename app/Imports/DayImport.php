@@ -55,39 +55,19 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         }
     }
 
+    private function thisColumnIsWorkoutName($rows, $rowIndex, $colIndex)
+    {
+        return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
+    }
+
     private function import($row)
     {
         if ($this->workouts->contains(Str::title($row[0]))) {
-            $this->createWorkout($row[0]);
-            return;
+            return $this->workout = $this->createWorkout($row[0]);
         }
 
         if (!is_null($this->workout)) {
-
-            if (Str::lower($row[0]) == 'exercise') {
-                $this->defineUnits($row);
-                return;
-            }
-
-            if (is_null($row[1]) && is_null($row[2])) {
-                if (Str::startsWith(Str::lower($row[0]), 'round')) {
-                    $this->defineSet($row[0], 'round ');
-                    return;
-                } elseif (Str::startsWith(Str::lower($row[0]), 'set')) {
-                    $this->defineSet($row[0], 'set ');
-                    return;
-                }
-            }
-
-            if (Str::startsWith(Str::lower($row[0]), 'total time')) {
-                $this->importTotalTime($this->workout, $row[1], Str::lower(Str::between($row[0], '(', ')')));
-                return;
-            }
-
-            if (!is_null($this->workout) && !is_null($this->set) && !is_null($row[1])) {
-                $this->importExercise($row);
-                return;
-            }
+            return $this->importWorkout($row);
         }
     }
 
@@ -99,16 +79,38 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         ])->first();
 
         if (is_null($workout)) {
-            $this->workout = Workout::create([
+            return Workout::create([
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName
             ]);
-            return;
         }
 
-        $workout->workoutXExercises()->delete();
+        $workout->sets()->detach();
 
-        $this->workout = $workout;
+        return $workout;
+    }
+
+    private function importWorkout($row)
+    {
+        if (Str::lower($row[0]) == 'exercise') {
+            return $this->defineUnits($row);
+        }
+
+        if (is_null($row[1]) && is_null($row[2])) {
+            if (Str::startsWith(Str::lower($row[0]), 'round')) {
+                return $this->defineSet($row[0], 'round ');
+            } elseif (Str::startsWith(Str::lower($row[0]), 'set')) {
+                return $this->defineSet($row[0], 'set ');
+            }
+        }
+
+        if (Str::startsWith(Str::lower($row[0]), 'total time')) {
+            return $this->importTotalTime($row[1], Str::lower(Str::between($row[0], '(', ')')));
+        }
+
+        if (!is_null($this->workout) && !is_null($this->set) && !is_null($row[1])) {
+            return $this->importExercise($row);
+        }
     }
 
     private function defineUnits($row)
@@ -120,6 +122,23 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private function defineSet($field, $prefix)
     {
         $this->set = Str::after(Str::lower($field), $prefix);
+    }
+
+    private function importTotalTime($totalTime, $totalTimeUnit)
+    {
+        $unit = Unit::updateOrCreate(['name' => $totalTimeUnit]);
+
+        if ($this->workout) {
+            $this->workout->update([
+                'total_time' => $totalTime,
+                'total_time_unit_id' => $unit->id
+            ]);
+        }
+
+        $this->workout = null;
+        $this->unit = null;
+        $this->restUnit = null;
+        $this->set = null;
     }
 
     private function importExercise($row)
@@ -144,9 +163,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         } else {
             $amounts = explode(' ', $row[1]);
             $restAmounts = explode(' ', $row[2]);
-
-            // info($amounts);
-            // info($restAmounts);
 
             foreach ($amounts as $index => $amount) {
                 if ($amount == '+') {
@@ -175,26 +191,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             'rest_amount' => $restAmount,
             'rest_unit_id' => $this->restUnit->id,
         ]);
-    }
-
-    private function importTotalTime($workout, $totalTime, $totalTimeUnit)
-    {
-        $unit = Unit::updateOrCreate(['name' => $totalTimeUnit]);
-
-        $workout->update([
-            'total_time' => $totalTime,
-            'total_time_unit_id' => $unit->id
-        ]);
-
-        $this->workout = null;
-        $this->unit = null;
-        $this->restUnit = null;
-        $this->set = null;
-    }
-
-    private function thisColumnIsWorkoutName($rows, $rowIndex, $colIndex)
-    {
-        return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
     }
 
     public function getWorkouts()
