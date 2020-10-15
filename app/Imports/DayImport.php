@@ -17,7 +17,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 {
     private $sheetName;
     private $workouts;
-    private $shouldImportWorkout;
     private $unit;
     private $restUnit;
     private $set;
@@ -29,7 +28,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             return Str::title($workout);
         });;
         $this->sheetName = $sheetName;
-        $this->shouldImportWorkout = false;
 
         $this->workout = null;
         $this->unit = null;
