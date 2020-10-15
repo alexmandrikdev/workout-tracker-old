@@ -18,6 +18,7 @@ class Set extends Model
     public function exercises()
     {
         return $this->belongsToMany(Exercise::class, 'set_exercises')
+            ->using(SetExercise::class)
             ->withPivot(['amount', 'unit_id', 'rest_amount', 'rest_unit_id']);
     }
 }
