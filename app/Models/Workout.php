@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\WorkoutSet;
+use App\Pivots\WorkoutSet;
 use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

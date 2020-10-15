@@ -14,13 +14,9 @@ class CreateWorkoutSetsTable extends Migration
     public function up()
     {
         Schema::create('workout_sets', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('workout_id')->constrained();
             $table->foreignId('set_id')->constrained();
             $table->unsignedTinyInteger('sort');
-            $table->foreignId('user_id')->constrained();
-            $table->softDeletes();
-            $table->timestamps();
         });
     }
 
