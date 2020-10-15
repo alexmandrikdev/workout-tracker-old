@@ -20,14 +20,4 @@ class Workout extends Model
     ];
 
     protected $hidden = ['deleted_at', 'created_at', 'updated_at', 'user_id'];
-
-    public function exercises()
-    {
-        return $this->belongsToMany(Exercise::class, 'workout_x_exercises')->withPivot('set', 'amount', 'unit_id');
-    }
-
-    public function workoutXExercises()
-    {
-        return $this->hasMany(WorkoutXExercise::class);
-    }
 }
