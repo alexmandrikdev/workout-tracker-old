@@ -4,9 +4,11 @@ namespace App\Imports;
 
 use App\Models\Day;
 use App\Models\Exercise;
+use App\Models\Set;
 use App\Models\Unit;
 use App\Models\Workout;
 use App\Models\WorkoutXExercise;
+use App\Pivots\WorkoutSet;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -32,7 +34,10 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->workout = null;
         $this->unit = null;
         $this->restUnit = null;
-        $this->set = null;
+        $this->set = collect([
+            'sort' => null,
+            'exercises' => collect(),
+        ]);
     }
 
     public function collection(Collection $rows)
@@ -76,13 +81,16 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $workout = Workout::where([
             'name' => Str::title($nameField),
             'date' => $this->sheetName
-        ])->first();
+        ])
+            ->with('sets')
+            ->first();
 
         if (is_null($workout)) {
             return Workout::create([
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName
-            ]);
+            ])
+                ->load('sets');
         }
 
         $workout->sets()->detach();
@@ -115,17 +123,90 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function defineUnits($row)
     {
-        $this->unit = Unit::updateOrCreate(['name' => Str::lower(Str::between($row[1], '(', ')'))]);
-        $this->restUnit = Unit::updateOrCreate(['name' => Str::lower(Str::between($row[2], '(', ')'))]);
+        $this->unit = Unit::firstOrCreate(['name' => Str::lower(Str::between($row[1], '(', ')'))]);
+        $this->restUnit = Unit::firstOrCreate(['name' => Str::lower(Str::between($row[2], '(', ')'))]);
     }
 
     private function defineSet($field, $prefix)
     {
-        $this->set = Str::after(Str::lower($field), $prefix);
+        if ($this->set['sort'] !== null) {
+            $this->attachSetToWorkout();
+        }
+
+        $sort = Str::after(Str::lower($field), $prefix);
+        $this->set['sort'] = $sort;
+
+        // if ($this->workout) {
+        //     $this->set = $this->workout->sets->firstWhere('sort', $sort);
+
+        //     if ($this->set) {
+        //         $this->set->exercises()->detach();
+        //     } else {
+        //         $this->set = Set::create();
+        //         $this->workout->sets()->attach($this->set);
+        //     }
+        // }
+    }
+
+    private function attachSetToWorkout()
+    {
+        if ($this->workout) {
+            $this->workout->load('sets.exercises');
+
+            $sets = $this->workout->sets;
+
+            $set = null;
+
+            // dd($sets);
+
+            if ($sets->isNotEmpty()) {
+                $set = $sets->filter(function ($set) {
+                    $setExercisesCount = $set->exercises->count();
+                    // dd($set->exercises);
+                    // info($set->exercises);
+                    // info($this->set['exercises']);
+                    $filteredSetExercisesCount = $set->exercises->filter(function ($exercise, $key) {
+                        if (!isset($this->set['exercises'][$key])) {
+                            return false;
+                        }
+
+                        $newExercise = $this->set['exercises'][$key];
+
+                        // dd($exercise->pivot);
+                        // dd($newExercise);
+
+                        return $exercise->pivot['exercise_id'] === $newExercise['id'] &&
+                            $exercise->pivot['amount'] === $newExercise['amount'] &&
+                            $exercise->pivot['unit_id'] === $newExercise['unit_id'] &&
+                            $exercise->pivot['rest_amount'] === $newExercise['rest_amount'] &&
+                            $exercise->pivot['rest_unit_id'] === $newExercise['rest_unit_id'];
+                    })
+                        ->count();
+                    // dd($filteredSetExercisesCount);
+                    return $setExercisesCount === $filteredSetExercisesCount;
+                })->first();
+            }
+
+            if ($set) {
+                $this->workout->sets()->attach($set);
+            } else {
+                $set = Set::create();
+
+                foreach ($this->set['exercises'] as $exercise) {
+                    $set->exercises()->attach($exercise['id'], collect($exercise)->except('id')->toArray());
+                }
+
+                $this->workout->sets()->attach($set);
+            }
+
+            $this->set['exercises'] = collect();
+        }
     }
 
     private function importTotalTime($totalTime, $totalTimeUnit)
     {
+        $this->attachSetToWorkout();
+
         $unit = Unit::updateOrCreate(['name' => $totalTimeUnit]);
 
         if ($this->workout) {
@@ -138,7 +219,10 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->workout = null;
         $this->unit = null;
         $this->restUnit = null;
-        $this->set = null;
+        $this->set = collect([
+            'sort' => null,
+            'exercises' => collect(),
+        ]);
     }
 
     private function importExercise($row)
@@ -147,19 +231,27 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             'name' => Str::title($row[0]),
         ]);
 
+        $amount = null;
+        $unitId = $this->unit ? $this->unit->id : null;
+        $restAmount = null;
+        $restUnitId = $this->restUnit ? $this->restUnit->id : null;
+
         if (is_numeric($row[1])) {
-            $this->createWorkoutXExercise($exercise->id, $row[1], $row[2]);
+            $amount = $row[1];
+            $restAmount = $row[2];
+            $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
         } elseif (preg_match('([a-zA-Z]+)', $row[1])) {
             preg_match('([0-9]+)', $row[1], $matches);
             $amount = $matches[0];
             preg_match('([a-zA-Z]+)', $row[1], $matches);
             $unit = $matches[0];
 
-            $unit = Unit::updateOrCreate([
+            $unitId = Unit::firstOrCreate([
                 'name' => $unit,
             ]);
 
-            $this->createWorkoutXExercise($exercise->id, $amount, $row[2], $unit->id);
+            $restAmount = $row[2];
+            $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
         } else {
             $amounts = explode(' ', $row[1]);
             $restAmounts = explode(' ', $row[2]);
@@ -173,23 +265,19 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                     ? ($index == array_key_last($amounts) ? $restAmounts[0] : null)
                     : $restAmounts[$index];
 
-                $this->createWorkoutXExercise($exercise->id, $amount, $restAmount);
+                $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
             }
         }
     }
 
-    private function createWorkoutXExercise($exerciseId, $amount, $restAmount, $unitId = null)
+    public function attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId)
     {
-        $unitId = is_null($unitId) ? $this->unit->id : $unitId;
-
-        WorkoutXExercise::create([
-            'workout_id' => $this->workout->id,
-            'exercise_id' => $exerciseId,
-            'set' => $this->set,
+        $this->set['exercises']->push([
+            'id' => $exercise->id,
             'amount' => $amount,
-            'unit_id' => $unitId,
             'rest_amount' => $restAmount,
-            'rest_unit_id' => $this->restUnit->id,
+            'unit_id' => $unitId,
+            'rest_unit_id' => $restUnitId,
         ]);
     }
 
