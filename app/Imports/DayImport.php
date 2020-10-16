@@ -93,7 +93,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 ->load('sets');
         }
 
-        $workout->sets()->detach();
+        $workout->sets()->delete();
 
         return $workout;
     }
