@@ -17,6 +17,8 @@ class Workout extends Model
 
     public function sets()
     {
-        return $this->belongsToMany(Set::class, 'workout_sets')->using(WorkoutSet::class)->withPivot('sort');
+        return $this->belongsToMany(Set::class, 'workout_sets')
+            ->using(WorkoutSet::class)
+            ->orderBy('sort');
     }
 }

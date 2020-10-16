@@ -18,6 +18,7 @@ class Set extends Model
     {
         return $this->belongsToMany(Exercise::class, 'set_exercises')
             ->using(SetExercise::class)
+            ->orderBy('sort')
             ->withPivot(['amount', 'unit_id', 'rest_amount', 'rest_unit_id']);
     }
 }
