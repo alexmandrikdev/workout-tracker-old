@@ -237,7 +237,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
                 $restAmount = $amounts->count() === $restAmounts->count()
                     ? $restAmounts[$index]
-                    : ($index == $amounts->keys()->last() ? $restAmounts[0] : null);
+                    : ($index == $amounts->keys()->last() && isset($restAmounts[0]) ? $restAmounts[0] : null);
 
                 $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
             }
