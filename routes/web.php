@@ -3,7 +3,6 @@
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\WorkoutImportController;
-use App\Models\WorkoutXExercise;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'auth'], function () {
@@ -19,7 +18,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
 
-    Route::resource('workouts', WorkoutController::class)->only(['index', 'show']);
+    // Route::resource('workouts', WorkoutController::class)->only(['index', 'show']);
 
     Route::resource('calendar', CalendarController::class)->only(['index']);
 });

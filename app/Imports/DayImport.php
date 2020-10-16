@@ -2,15 +2,11 @@
 
 namespace App\Imports;
 
-use App\Models\Day;
 use App\Models\Exercise;
 use App\Models\Set;
 use App\Models\Unit;
 use App\Models\Workout;
-use App\Models\WorkoutXExercise;
-use App\Pivots\WorkoutSet;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
