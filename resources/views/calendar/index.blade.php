@@ -5,29 +5,7 @@
 @endsection
 
 @section('content')
-    <div class="mb-4">
-        <form id="date-select-form" class="mx-auto">
-            @isset($workoutNameFilter)
-                <input type="hidden" name="workout_name" value="{{ $workoutNameFilter }}">
-            @endisset
-            <div class="row">
-                <div class="col">
-                    <select id="year-select" class="custom-select" name="year">
-                        @for ($year2 = $minWorkoutDate->year; $year2 <= $maxWorkoutDate->year; $year2++)
-                            <option {{ $year == $year2 ? 'selected' : '' }} value="{{ $year2 }}">{{ $year2 }}</option>
-                        @endfor
-                    </select>
-                </div>
-                <div class="col">
-                    <select id="month-select" class="custom-select" name="month">
-                        @foreach ($monthNames as $key => $monthName)
-                            <option {{ $key + 1 == $month ? 'selected' : '' }} value="{{ $key + 1 }}">{{ $monthName }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </form>
-    </div>
+    @include('calendar.index.date-selector-form')
     <div class="calendar-container bg-dark">
         <div class="calendar">
             @foreach ($dayNames as $dayName)
