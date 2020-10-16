@@ -67,6 +67,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function import($row)
     {
+        info($this->set);
+
         if ($this->workouts->contains(Str::title($row[0]))) {
             return $this->workout = $this->createWorkout($row[0]);
         }
@@ -82,15 +84,13 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             'name' => Str::title($nameField),
             'date' => $this->sheetName
         ])
-            ->with('sets')
             ->first();
 
         if (is_null($workout)) {
             return Workout::create([
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName
-            ])
-                ->load('sets');
+            ]);
         }
 
         $workout->sets()->delete();
@@ -113,6 +113,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         }
 
         if (Str::startsWith(Str::lower($row[0]), 'total time')) {
+            $this->attachSetToWorkout();
             return $this->importTotalTime($row[1], Str::lower(Str::between($row[0], '(', ')')));
         }
 
@@ -135,17 +136,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         $sort = Str::after(Str::lower($field), $prefix);
         $this->set['sort'] = $sort;
-
-        // if ($this->workout) {
-        //     $this->set = $this->workout->sets->firstWhere('sort', $sort);
-
-        //     if ($this->set) {
-        //         $this->set->exercises()->detach();
-        //     } else {
-        //         $this->set = Set::create();
-        //         $this->workout->sets()->attach($this->set);
-        //     }
-        // }
     }
 
     private function attachSetToWorkout()
@@ -157,23 +147,15 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
             $set = null;
 
-            // dd($sets);
-
             if ($sets->isNotEmpty()) {
                 $set = $sets->filter(function ($set) {
                     $setExercisesCount = $set->exercises->count();
-                    // dd($set->exercises);
-                    // info($set->exercises);
-                    // info($this->set['exercises']);
                     $filteredSetExercisesCount = $set->exercises->filter(function ($exercise, $key) {
                         if (!isset($this->set['exercises'][$key])) {
                             return false;
                         }
 
                         $newExercise = $this->set['exercises'][$key];
-
-                        // dd($exercise->pivot);
-                        // dd($newExercise);
 
                         return $exercise->pivot['exercise_id'] === $newExercise['id'] &&
                             $exercise->pivot['amount'] === $newExercise['amount'] &&
@@ -182,31 +164,30 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                             $exercise->pivot['rest_unit_id'] === $newExercise['rest_unit_id'];
                     })
                         ->count();
-                    // dd($filteredSetExercisesCount);
                     return $setExercisesCount === $filteredSetExercisesCount;
                 })->first();
             }
 
-            if ($set) {
-                $this->workout->sets()->attach($set);
-            } else {
+            if (!$set) {
                 $set = Set::create();
 
                 foreach ($this->set['exercises'] as $exercise) {
                     $set->exercises()->attach($exercise['id'], collect($exercise)->except('id')->toArray());
                 }
-
-                $this->workout->sets()->attach($set);
             }
 
-            $this->set['exercises'] = collect();
+
+            $this->workout->sets()->attach($set);
+
+            $this->set = collect([
+                'sort' => null,
+                'exercises' => collect(),
+            ]);
         }
     }
 
     private function importTotalTime($totalTime, $totalTimeUnit)
     {
-        $this->attachSetToWorkout();
-
         $unit = Unit::updateOrCreate(['name' => $totalTimeUnit]);
 
         if ($this->workout) {
@@ -219,10 +200,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->workout = null;
         $this->unit = null;
         $this->restUnit = null;
-        $this->set = collect([
-            'sort' => null,
-            'exercises' => collect(),
-        ]);
     }
 
     private function importExercise($row)
