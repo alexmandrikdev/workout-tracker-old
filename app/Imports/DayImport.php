@@ -64,8 +64,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function import($row, $issetNextRow)
     {
-        info($this->set);
-
         if ($this->workouts->contains(Str::title($row[0]))) {
             return $this->workout = $this->createWorkout($row[0]);
         }
@@ -214,36 +212,38 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             $amount = $row[1];
             $restAmount = $row[2];
             $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
-        } elseif (preg_match('([a-zA-Z]+)', $row[1])) {
-            preg_match('([0-9]+)', $row[1], $matches);
-            $amount = $matches[0];
-            preg_match('([a-zA-Z]+)', $row[1], $matches);
-            $unit = $matches[0];
-
-            $unitId = Unit::firstOrCreate([
-                'name' => $unit,
-            ]);
-
-            $restAmount = $row[2];
-            $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
         } else {
-            $amounts = explode(' ', $row[1]);
-            $restAmounts = explode(' ', $row[2]);
+
+            preg_match_all('((\d( )*([a-zA-Z]+))|\d)', $row[1], $matches);
+
+            $amounts = collect($matches[0]);
+
+            preg_match_all('(\d+)', $row[2], $matches);
+
+            $restAmounts = collect($matches[0]);
 
             foreach ($amounts as $index => $amount) {
-                if ($amount == '+') {
-                    continue;
+                if (!is_numeric($amount)) {
+                    preg_match('([a-zA-Z]+)', $amount, $matches);
+                    $unitId = Unit::firstOrCreate([
+                        'name' => $matches[0]
+                    ])->id;
+
+                    preg_match('(\d+)', $amount, $matches);
+                    $amount = $matches[0];
+                } else {
+                    $unitId = $this->unit ? $this->unit->id : null;
                 }
 
-                $restAmount = in_array('+', $amounts)
-                    ? ($index == array_key_last($amounts) ? $restAmounts[0] : null)
-                    : $restAmounts[$index];
+                $restAmount = $amounts->count() === $restAmounts->count()
+                    ? $restAmounts[$index]
+                    : ($index == $amounts->keys()->last() ? $restAmounts[0] : null);
 
                 $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
             }
         }
 
-        if(!$issetNextRow){
+        if (!$issetNextRow) {
             $this->attachSetToWorkout();
         }
     }
