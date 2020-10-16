@@ -5,13 +5,12 @@ namespace App\Models;
 use App\Pivots\SetExercise;
 use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Set extends Model
 {
-    use SoftDeletes, Multitenantable;
+    use Multitenantable;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     protected $hidden = ['user_id', 'created_at', 'updated_at', 'deleted_at'];
 
