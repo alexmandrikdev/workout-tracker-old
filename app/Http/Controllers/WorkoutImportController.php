@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WorkoutsImport\GetSheetsRequest;
 use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
+use App\Models\Set;
 use App\Models\Workout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -91,8 +92,15 @@ class WorkoutImportController extends Controller
 
         Excel::import($daysImport, $request->excelPath);
 
+        $this->deleteUnusedSets();
+
         Storage::delete($request->excelPath);
 
         return back()->with('status', 'Import successful');
+    }
+
+    private function deleteUnusedSets()
+    {
+        Set::doesntHave('workouts')->delete();
     }
 }

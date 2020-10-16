@@ -88,7 +88,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             ]);
         }
 
-        $workout->sets()->delete();
+        $workout->sets()->detach();
 
         return $workout;
     }
@@ -138,7 +138,11 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         if ($this->workout) {
             $this->workout->load('sets.exercises');
 
-            $sets = $this->workout->sets;
+            $sets = Set::whereHas('exercises', function($q){
+                $q->whereIn('id', $this->set['exercises']->pluck('id'));
+            })
+                ->with('setExercises')
+                ->get();
 
             $set = null;
 
@@ -252,8 +256,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     {
         $this->set['exercises']->push([
             'id' => $exercise->id,
-            'amount' => $amount,
-            'rest_amount' => $restAmount,
+            'amount' => (int)$amount,
+            'rest_amount' => (int)$restAmount,
             'unit_id' => $unitId,
             'rest_unit_id' => $restUnitId,
         ]);
