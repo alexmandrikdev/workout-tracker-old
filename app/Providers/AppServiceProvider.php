@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->composer('*', function($view){
+        view()->composer('layouts.app', function($view){
             $workoutNames = Workout::all()->pluck('name')->unique();
 
             $view->with('workoutNames', $workoutNames);
