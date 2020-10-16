@@ -48,7 +48,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             }
         } else {
             foreach ($rows as $rowIndex => $row) {
-                $this->import($row);
+                $issetNextRow = isset($rows[$rowIndex + 1]);
+                $this->import($row, $issetNextRow);
             }
         }
     }
@@ -65,7 +66,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
     }
 
-    private function import($row)
+    private function import($row, $issetNextRow)
     {
         info($this->set);
 
@@ -74,7 +75,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         }
 
         if (!is_null($this->workout)) {
-            return $this->importWorkout($row);
+            return $this->importWorkout($row, $issetNextRow);
         }
     }
 
@@ -98,7 +99,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         return $workout;
     }
 
-    private function importWorkout($row)
+    private function importWorkout($row, $issetNextRow)
     {
         if (Str::lower($row[0]) == 'exercise') {
             return $this->defineUnits($row);
@@ -118,7 +119,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         }
 
         if (!is_null($this->workout) && !is_null($this->set) && !is_null($row[1])) {
-            return $this->importExercise($row);
+            return $this->importExercise($row, $issetNextRow);
         }
     }
 
@@ -202,7 +203,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->restUnit = null;
     }
 
-    private function importExercise($row)
+    private function importExercise($row, $issetNextRow)
     {
         $exercise = Exercise::updateOrCreate([
             'name' => Str::title($row[0]),
@@ -244,6 +245,10 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
                 $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
             }
+        }
+
+        if(!$issetNextRow){
+            $this->attachSetToWorkout();
         }
     }
 
