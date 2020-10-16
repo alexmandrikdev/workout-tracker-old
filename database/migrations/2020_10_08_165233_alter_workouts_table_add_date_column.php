@@ -14,8 +14,6 @@ class AlterWorkoutsTableAddDateColumn extends Migration
     public function up()
     {
         Schema::table('workouts', function (Blueprint $table) {
-            $table->dropForeign(['day_id']);
-            $table->dropColumn('day_id');
             $table->date('date')->after('user_id');
         });
     }
