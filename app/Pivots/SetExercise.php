@@ -10,6 +10,8 @@ class SetExercise extends Pivot
 {
     use Sortable;
 
+    protected $table = 'set_exercises';
+
     protected static function booted()
     {
         static::creating(function ($model) {
