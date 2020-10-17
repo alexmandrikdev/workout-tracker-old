@@ -136,7 +136,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private function attachSetToWorkout()
     {
         if ($this->workout) {
-            $this->workout->load('sets.exercises');
 
             $sets = Set::whereHas('exercises', function($q){
                 $q->whereIn('id', $this->set['exercises']->pluck('id'));
