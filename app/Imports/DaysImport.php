@@ -13,10 +13,12 @@ class DaysImport implements WithMultipleSheets, WithEvents
     private $sheetNames;
     private $dayImports;
     private $days;
+    private $userId;
 
-    public function __construct($sheetNames, $days = [])
+    public function __construct($sheetNames, $days = [], $userId = null)
     {
         $this->sheetNames = $sheetNames;
+        $this->userId = $userId;
         $this->days = collect($days);
 
         if ($this->days->isEmpty()) {
@@ -31,7 +33,7 @@ class DaysImport implements WithMultipleSheets, WithEvents
         foreach ($this->sheetNames as $sheetName) {
             $day = $this->days->isNotEmpty() ? $this->days[$sheetName] : [];
 
-            $dayImport = new DayImport($sheetName, $day);
+            $dayImport = new DayImport($sheetName, $day, $this->userId);
 
             if ($this->days->isEmpty()) {
                 $this->dayImports->push($dayImport);

@@ -20,13 +20,15 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private $restUnit;
     private $set;
     private $workout;
+    private $userId;
 
-    public function __construct($sheetName, $workouts)
+    public function __construct($sheetName, $workouts, $userId = null)
     {
         $this->workouts = collect($workouts)->map(function ($workout) {
             return Str::title($workout);
         });;
         $this->sheetName = $sheetName;
+        $this->userId = $userId;
 
         $this->workout = null;
         $this->unit = null;
@@ -79,6 +81,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         DB::beginTransaction();
 
         $workout = Workout::where([
+            'user_id' => $this->userId,
             'name' => Str::title($nameField),
             'date' => $this->sheetName
         ])
@@ -86,6 +89,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         if (is_null($workout)) {
             return Workout::create([
+                'user_id' => $this->userId,
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName
             ]);

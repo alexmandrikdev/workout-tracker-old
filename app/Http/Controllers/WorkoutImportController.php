@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WorkoutsImport\GetSheetsRequest;
 use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
+use App\Jobs\WorkoutImportJob;
 use App\Models\Exercise;
 use App\Models\Set;
 use App\Models\Workout;
@@ -89,20 +90,8 @@ class WorkoutImportController extends Controller
 
         $days = $days->collapse();
 
-        $daysImport = new DaysImport($sheetNames, $days);
-
-        Excel::import($daysImport, $request->excelPath);
-
-        $this->deleteUnusedSets();
-
-        Storage::delete($request->excelPath);
+        WorkoutImportJob::dispatch($sheetNames, $days, $request->excelPath, auth()->id());
 
         return back()->with('status', 'Import successful');
-    }
-
-    private function deleteUnusedSets()
-    {
-        Set::doesntHave('workoutSets')->delete();
-        Exercise::doesntHave('sets')->delete();
     }
 }
