@@ -4,16 +4,13 @@ namespace App\Models;
 
 use App\Pivots\SetExercise;
 use App\Pivots\WorkoutSet;
-use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 
 class Set extends Model
 {
-    use Multitenantable;
-
     protected $guarded = ['id'];
 
-    protected $hidden = ['user_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     public function exercises()
     {

@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use AjCastro\EagerLoadPivotRelations\EagerLoadPivotTrait;
-use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Exercise extends Model
 {
-    use SoftDeletes, Multitenantable, EagerLoadPivotTrait;
+    use SoftDeletes, EagerLoadPivotTrait;
 
     protected $guarded = [];
 
