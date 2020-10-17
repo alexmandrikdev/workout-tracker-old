@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Pivots\WorkoutSet;
-use App\Traits\Multitenantable;
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workout extends Model
 {
-    use SoftDeletes, Multitenantable;
+    use SoftDeletes, BelongsToUser;
 
     protected $guarded = [];
 

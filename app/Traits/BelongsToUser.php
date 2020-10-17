@@ -4,9 +4,9 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 
-trait Multitenantable
+trait BelongsToUser
 {
-    public static function bootMultitenantable()
+    public static function bootBelongsToUser()
     {
         static::creating(function ($model) {
             if (auth()->check()) {
