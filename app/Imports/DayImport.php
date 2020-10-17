@@ -7,6 +7,7 @@ use App\Models\Set;
 use App\Models\Unit;
 use App\Models\Workout;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
@@ -75,6 +76,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function createWorkout($nameField)
     {
+        DB::beginTransaction();
+
         $workout = Workout::where([
             'name' => Str::title($nameField),
             'date' => $this->sheetName
@@ -198,6 +201,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->workout = null;
         $this->unit = null;
         $this->restUnit = null;
+
+        DB::commit();
     }
 
     private function importExercise($row, $issetNextRow)
@@ -248,6 +253,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         if (!$issetNextRow) {
             $this->attachSetToWorkout();
+
+            DB::commit();
         }
     }
 
