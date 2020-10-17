@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WorkoutsImport\GetSheetsRequest;
 use App\Imports\DaysImport;
 use App\Imports\SheetNamesImport;
+use App\Models\Exercise;
 use App\Models\Set;
 use App\Models\Workout;
 use Illuminate\Http\Request;
@@ -102,5 +103,6 @@ class WorkoutImportController extends Controller
     private function deleteUnusedSets()
     {
         Set::doesntHave('workoutSets')->delete();
+        Exercise::doesntHave('sets')->delete();
     }
 }
