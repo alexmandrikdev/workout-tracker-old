@@ -87,11 +87,16 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         ])
             ->first();
 
+        $workout->update([
+            'imported' => true,
+        ]);
+
         if (is_null($workout)) {
             return Workout::create([
                 'user_id' => $this->userId,
                 'name' => Str::title($nameField),
-                'date' => $this->sheetName
+                'date' => $this->sheetName,
+                'imported' => true,
             ]);
         }
 

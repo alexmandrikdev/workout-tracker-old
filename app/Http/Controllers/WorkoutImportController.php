@@ -88,6 +88,10 @@ class WorkoutImportController extends Controller
             return $request->get('day' . $dayKey . 'Status') == 'on';
         });
 
+        Workout::whereIn('date', $sheetNames)->update([
+            'imported' => false
+        ]);
+
         $days = $days->collapse();
 
         WorkoutImportJob::dispatch($sheetNames, $days, $request->excelPath, auth()->id());
