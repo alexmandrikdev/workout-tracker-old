@@ -101,6 +101,6 @@ class WorkoutImportController extends Controller
 
     private function deleteUnusedSets()
     {
-        Set::doesntHave('workouts')->delete();
+        Set::doesntHave('workoutSets')->delete();
     }
 }

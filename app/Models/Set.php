@@ -31,4 +31,9 @@ class Set extends Model
             ->using(WorkoutSet::class)
             ->orderBy('sort');
     }
+
+    public function workoutSets()
+    {
+        return $this->hasMany(WorkoutSet::class);
+    }
 }
