@@ -54,7 +54,7 @@ class WorkoutImportController extends Controller
             });
         });
 
-        $importedDays = $days->filter(function($workouts){
+        $importedDays = $days->filter(function ($workouts) {
             return $workouts->count() == $workouts->where('isImported', true)->count();
         });
 
@@ -96,6 +96,20 @@ class WorkoutImportController extends Controller
 
         WorkoutImportJob::dispatch($sheetNames, $days, $request->excelPath, auth()->id());
 
-        return back()->with('status', 'Import successful');
+        return back()->with([
+            'status' => 'import_in_progress',
+            'days' => $sheetNames
+        ]);
+    }
+
+    public function getImportProgress(Request $request)
+    {
+        return Workout::select('date')
+            ->whereIn('date', $request->days)
+            ->where('imported', true)
+            ->get()
+            ->pluck('date')
+            ->unique()
+            ->count();
     }
 }

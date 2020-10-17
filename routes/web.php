@@ -15,6 +15,7 @@ Route::group(['middleware' => 'auth'], function () {
 
             Route::post('/', [WorkoutImportController::class, 'import']);
             Route::post('get-sheets', [WorkoutImportController::class, 'getSheets'])->name('getSheets');
+            Route::post('get-import-progress', [WorkoutImportController::class, 'getImportProgress']);
         });
     });
 

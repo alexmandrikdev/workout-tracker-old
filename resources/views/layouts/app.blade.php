@@ -7,7 +7,7 @@
 
   <title>Workout Tracker</title>
 
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="stylesheet" href="/css/app.css?v=1.0.0">
   @yield('extra-css')
 </head>
 
