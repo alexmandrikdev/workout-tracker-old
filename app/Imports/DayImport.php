@@ -184,6 +184,8 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 'sort' => null,
                 'exercises' => collect(),
             ]);
+
+            DB::commit();
         }
     }
 
@@ -201,8 +203,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->workout = null;
         $this->unit = null;
         $this->restUnit = null;
-
-        DB::commit();
     }
 
     private function importExercise($row, $issetNextRow)
@@ -253,8 +253,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         if (!$issetNextRow) {
             $this->attachSetToWorkout();
-
-            DB::commit();
         }
     }
 
