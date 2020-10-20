@@ -19,7 +19,8 @@ class Workout extends Model
     {
         return $this->belongsToMany(Set::class, 'workout_sets')
             ->using(WorkoutSet::class)
-            ->orderBy('sort');
+            ->orderBy('sort')
+            ->withPivot(['sort']);
     }
 
     public function totalTimeUnit()

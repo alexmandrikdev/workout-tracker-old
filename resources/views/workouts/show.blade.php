@@ -8,6 +8,7 @@
     <table class="table table-dark">
         <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Amount</th>
                 <th>Rest</th>
@@ -17,20 +18,26 @@
         <tbody>
             @foreach ($workouts as $workout)
                 <tr>
-                    <td colspan="4" class="text-center workout-name-col">{{ $workout['name'] }}</td>
+                    <td colspan="5" class="text-center workout-name-col">{{ $workout['name'] }}</td>
                 </tr>
                 @foreach ($workout['sets'] as $set)
                     @foreach ($set['data']->exercises as $key => $exercise)
                         <tr class="{{ $key === $set['data']->exercises->keys()->first() ? 'exercise-first-row' : '' }}">
-                            <td>{{ $exercise->name }}</td>
+                            @if($key === 0)
+                                <td rowspan="{{ $set['data']->exercises->count() }}" class="align-middle text-center">{{ $set['data']->pivot->sort }}</td>
+                            @endif
+                            <td class="exercise-first-col">{{ $exercise->name }}</td>
                             <td>{{ $exercise->pivot->amount }} {{ Str::plural($exercise->pivot->unit->name, $exercise->pivot->amount) }}</td>
                             <td class="exercise-last-col">{{ $exercise->pivot->rest_amount }} {{ $exercise->pivot->restUnit->name }}</td>
                             @if($key === 0)
-                            <td rowspan="{{ $set['data']->exercises->count() }}" class="align-middle text-center">x{{ $set['count'] }}</td>
+                                <td rowspan="{{ $set['data']->exercises->count() }}" class="align-middle text-center">x{{ $set['count'] }}</td>
                             @endif
                         </tr>
                     @endforeach
                 @endforeach
+                <tr>
+                    <td colspan="5" class="text-center">Total Time ({{ $workout['total_time_unit'] }}): {{ $workout['total_time'] }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
