@@ -92,12 +92,12 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         ])
             ->first();
 
-        $workout->update([
-            'imported' => true,
-            'sort' => $this->workoutSort,
-        ]);
-
-        if (is_null($workout)) {
+        if ($workout) {
+            $workout->update([
+                'imported' => true,
+                'sort' => $this->workoutSort,
+            ]);
+        } else {
             return Workout::create([
                 'user_id' => $this->userId,
                 'name' => Str::title($nameField),
@@ -139,12 +139,12 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private function defineUnits($row)
     {
         $name = Str::of(Str::between($row[1], '(', ')'))->lower();
-        if($name != 's'){
+        if ($name != 's') {
             $name = $name->singular();
         }
         $this->unit = Unit::firstOrCreate(['name' => $name]);
         $name = Str::of(Str::between($row[2], '(', ')'))->lower();
-        if($name != 's'){
+        if ($name != 's') {
             $name = $name->singular();
         }
         $this->restUnit = Unit::firstOrCreate(['name' => $name]);
