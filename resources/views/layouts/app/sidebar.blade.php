@@ -15,6 +15,6 @@
             @endforeach
         </div>
         <a href="/workouts/import" class="list-group-item list-group-item-action bg-dark text-light">@lang('Import Workouts')</a>
-        <a href="#" class="list-group-item list-group-item-action bg-dark text-light">@lang('Excersises')</a>
+        <a href="#" class="list-group-item list-group-item-action bg-dark text-light">@lang('Exercises')</a>
     </div>
 </div>
