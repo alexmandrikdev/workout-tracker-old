@@ -246,7 +246,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
             $this->attachExerciseToSet($exercise, $amount, $restAmount, $unitId, $restUnitId);
         } else {
 
-            preg_match_all('((\d( )*([a-zA-Z]+))|\d)', $row[1], $matches);
+            preg_match_all('((\d+( )*([a-zA-Z]+))|\d+)', $row[1], $matches);
 
             $amounts = collect($matches[0]);
 
