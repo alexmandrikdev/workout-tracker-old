@@ -20,6 +20,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private $restUnit;
     private $set;
     private $workout;
+    private $workoutSort;
     private $userId;
 
     public function __construct($sheetName, $workouts, $userId = null)
@@ -31,6 +32,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $this->userId = $userId;
 
         $this->workout = null;
+        $this->workoutSort = 0;
         $this->unit = null;
         $this->restUnit = null;
         $this->set = collect([
@@ -48,7 +50,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         } else {
             foreach ($rows as $rowIndex => $row) {
                 $issetNextRow = isset($rows[$rowIndex + 1]);
-                $this->import($row, $issetNextRow);
+                $this->import($row, $issetNextRow, $rows, $rowIndex);
             }
         }
     }
@@ -65,10 +67,13 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         return isset($rows[$rowIndex + 1][$colIndex]) && Str::lower($rows[$rowIndex + 1][$colIndex]) == 'exercise';
     }
 
-    private function import($row, $issetNextRow)
+    private function import($row, $issetNextRow, $rows, $rowIndex)
     {
-        if ($this->workouts->contains(Str::title($row[0]))) {
-            return $this->workout = $this->createWorkout($row[0]);
+        if ($this->thisColumnIsWorkoutName($rows, $rowIndex, 0)) {
+            $this->workoutSort++;
+            if ($this->workouts->contains(Str::title($row[0]))) {
+                return $this->workout = $this->createWorkout($row[0]);
+            }
         }
 
         if (!is_null($this->workout)) {
@@ -83,12 +88,13 @@ class DayImport implements ToCollection, WithCalculatedFormulas
         $workout = Workout::where([
             'user_id' => $this->userId,
             'name' => Str::title($nameField),
-            'date' => $this->sheetName
+            'date' => $this->sheetName,
         ])
             ->first();
 
         $workout->update([
             'imported' => true,
+            'sort' => $this->workoutSort,
         ]);
 
         if (is_null($workout)) {
@@ -97,6 +103,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName,
                 'imported' => true,
+                'sort' => $this->workoutSort,
             ]);
         }
 
@@ -149,7 +156,7 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     {
         if ($this->workout) {
 
-            $sets = Set::whereHas('exercises', function($q){
+            $sets = Set::whereHas('exercises', function ($q) {
                 $q->whereIn('id', $this->set['exercises']->pluck('id'));
             })
                 ->with('setExercises')
