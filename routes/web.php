@@ -19,7 +19,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
 
-    // Route::resource('workouts', WorkoutController::class)->only(['index', 'show']);
+    Route::resource('workouts', WorkoutController::class)->only(['show']);
 
     Route::resource('calendar', CalendarController::class)->only(['index']);
 });

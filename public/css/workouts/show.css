@@ -1,0 +1,7 @@
+.exercise-last-col{
+    border-right: 1px solid #dee2e6;
+}
+
+.exercise-first-row td, .workout-name-col{
+    border-top-width: 2px !important;
+}

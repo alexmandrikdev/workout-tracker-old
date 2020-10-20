@@ -13,8 +13,51 @@ class WorkoutController extends Controller
 {
     public function show($date)
     {
-        $workout = Workout::whereDate('date', $date)->get();
+        $workouts = Workout::whereDate('date', $date)
+            ->with([
+                'totalTimeUnit',
+                'sets.exercises',
+                'sets.exercises.pivot.unit',
+                'sets.exercises.pivot.restUnit',
+            ])
+            ->orderBy('sort')
+            ->get();
 
-        return $workout;
+        $workouts = $workouts->map(function($workout){
+            $sets = $this->groupingSets($workout->sets);
+
+            return [
+                'name' => $workout->name,
+                'sort' => $workout->sort,
+                'total_time' => $workout->total_time,
+                'total_time_unit' => $workout->totalTimeUnit->name,
+                'sets' => $sets,
+            ];
+        });
+
+        return view('workouts.show', compact('workouts'));
+    }
+
+    private function groupingSets($sets)
+    {
+        $groupedSets = collect();
+
+        $lastKey = 0;
+
+        foreach($sets as $key => $set){
+            if($key === 0 || $set->id !== $sets[$lastKey]->id){
+                $groupedSets->push([
+                    'data' => $set,
+                    'count' => 1
+                ]);
+                $lastKey = $key;
+            } else {
+                $lastSet = $groupedSets->pop();
+                $lastSet['count']++;
+                $groupedSets->push($lastSet);
+            }
+        }
+
+        return $groupedSets;
     }
 }

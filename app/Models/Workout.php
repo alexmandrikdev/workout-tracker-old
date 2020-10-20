@@ -21,4 +21,9 @@ class Workout extends Model
             ->using(WorkoutSet::class)
             ->orderBy('sort');
     }
+
+    public function totalTimeUnit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
 }
