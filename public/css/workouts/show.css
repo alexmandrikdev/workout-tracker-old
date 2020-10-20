@@ -9,3 +9,7 @@
 .exercise-first-row td, .workout-name-col{
     border-top-width: 2px !important;
 }
+
+td {
+    vertical-align: middle !important;
+}

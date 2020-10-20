@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('extra-css')
-    <link rel="stylesheet" href="/css/workouts/show.css">
+    <link rel="stylesheet" href="/css/workouts/show.css?v=1.0.0">
 @endsection
 
 @section('content')
