@@ -20,6 +20,7 @@ class CalendarController extends Controller
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->orderBy('date')
+            ->orderBy('sort')
             ->get()
             ->groupBy('date');
 
