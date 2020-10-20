@@ -86,7 +86,7 @@ class WorkoutImportController extends Controller
 
         $sheetNames = collect($request->days)->filter(function ($day, $dayKey) use ($request) {
             return $request->get('day' . $dayKey . 'Status') == 'on';
-        });
+        })->values();
 
         Workout::whereIn('date', $sheetNames)->update([
             'imported' => false
