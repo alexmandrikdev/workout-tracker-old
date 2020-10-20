@@ -138,8 +138,16 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
     private function defineUnits($row)
     {
-        $this->unit = Unit::firstOrCreate(['name' => Str::lower(Str::between($row[1], '(', ')'))]);
-        $this->restUnit = Unit::firstOrCreate(['name' => Str::lower(Str::between($row[2], '(', ')'))]);
+        $name = Str::of(Str::between($row[1], '(', ')'))->lower();
+        if($name != 's'){
+            $name = $name->singular();
+        }
+        $this->unit = Unit::firstOrCreate(['name' => $name]);
+        $name = Str::of(Str::between($row[2], '(', ')'))->lower();
+        if($name != 's'){
+            $name = $name->singular();
+        }
+        $this->restUnit = Unit::firstOrCreate(['name' => $name]);
     }
 
     private function defineSet($field, $prefix)
