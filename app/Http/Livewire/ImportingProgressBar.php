@@ -11,12 +11,12 @@ class ImportingProgressBar extends Component
 
     public function hydrate()
     {
-        $importStatus = ImportStatus::latest()->first();
-
-        if ($importStatus) {
-            $this->progress = round(($importStatus->imported_days * 100) / $importStatus->importable_days);
-        } else {
-            session(['importing' => false]);
+        if (session('importing')) {
+            $importStatus = ImportStatus::latest()->first();
+            $this->progress = $importStatus ? round(($importStatus->imported_days * 100) / $importStatus->importable_days) : 100;
+            if (!$importStatus) {
+                session(['importing' => false]);
+            }
         }
     }
 
