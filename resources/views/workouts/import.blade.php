@@ -78,3 +78,8 @@
         </form>
     @endif
 @endsection
+
+
+@section('extra-js')
+    <script src="/js/workouts/import.js?v=1.0.0"></script>
+@endsection
