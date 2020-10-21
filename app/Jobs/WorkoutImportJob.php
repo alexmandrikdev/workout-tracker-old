@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Imports\DaysImport;
 use App\Models\Exercise;
+use App\Models\ImportStatus;
 use App\Models\Set;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,7 +38,13 @@ class WorkoutImportJob implements ShouldQueue
      */
     public function handle()
     {
-        $daysImport = new DaysImport($this->sheetNames, $this->days, $this->userId);
+        $daysImport = new DaysImport($this->sheetNames, $this->days, $this->userId, $this->job->getJobId());
+
+        ImportStatus::create([
+            'job_id' => $this->job->getJobId(),
+            'user_id' => $this->userId,
+            'importable_days' => $this->sheetNames->count(),
+        ]);
 
         Excel::import($daysImport, $this->excelPath);
 

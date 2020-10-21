@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Exercise;
+use App\Models\ImportStatus;
 use App\Models\Set;
 use App\Models\Unit;
 use App\Models\Workout;
@@ -22,14 +23,16 @@ class DayImport implements ToCollection, WithCalculatedFormulas
     private $workout;
     private $workoutSort;
     private $userId;
+    private $jobId;
 
-    public function __construct($sheetName, $workouts, $userId = null)
+    public function __construct($sheetName, $workouts, $userId = null, $jobId = null)
     {
         $this->workouts = collect($workouts)->map(function ($workout) {
             return Str::title($workout);
         });;
         $this->sheetName = $sheetName;
         $this->userId = $userId;
+        $this->jobId = $jobId;
 
         $this->workout = null;
         $this->workoutSort = 0;
@@ -48,6 +51,11 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 $this->collectWorkoutNames($rows, $rowIndex);
             }
         } else {
+            ImportStatus::where([
+                'user_id' => $this->userId,
+                'job_id' => $this->jobId,
+            ])
+                ->increment('imported_days');
             foreach ($rows as $rowIndex => $row) {
                 $issetNextRow = isset($rows[$rowIndex + 1]);
                 $this->import($row, $issetNextRow, $rows, $rowIndex);

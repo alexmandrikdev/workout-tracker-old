@@ -10963,9 +10963,12 @@ a.text-dark:focus {
   padding-left: 2.5rem;
 }
 
-body.disabled * {
-  cursor: not-allowed;
-  pointer-events: none;
+.notification-bar {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  z-index: 1000;
+  opacity: 100% !important;
 }
 
 @media (min-width: 768px) {
@@ -10981,5 +10984,14 @@ body.disabled * {
   #wrapper.toggled #sidebar-wrapper {
     margin-left: -15rem;
   }
+}
+
+.progress {
+  background-color: transparent;
+  border: 1px solid #343A40;
+}
+
+.importing-progress-bar {
+  width: 250px;
 }
 

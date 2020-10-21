@@ -94,22 +94,10 @@ class WorkoutImportController extends Controller
 
         $days = $days->collapse();
 
+        session(['importing' => true]);
+
         WorkoutImportJob::dispatch($sheetNames, $days, $request->excelPath, auth()->id());
 
-        return back()->with([
-            'status' => 'import_in_progress',
-            'days' => $sheetNames
-        ]);
-    }
-
-    public function getImportProgress(Request $request)
-    {
-        return Workout::select('date')
-            ->whereIn('date', $request->days)
-            ->where('imported', true)
-            ->get()
-            ->pluck('date')
-            ->unique()
-            ->count();
+        return redirect('calendar');
     }
 }
