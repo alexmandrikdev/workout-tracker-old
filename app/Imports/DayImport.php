@@ -102,7 +102,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
 
         if ($workout) {
             $workout->update([
-                'imported' => true,
                 'sort' => $this->workoutSort,
             ]);
         } else {
@@ -110,7 +109,6 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 'user_id' => $this->userId,
                 'name' => Str::title($nameField),
                 'date' => $this->sheetName,
-                'imported' => true,
                 'sort' => $this->workoutSort,
             ]);
         }
