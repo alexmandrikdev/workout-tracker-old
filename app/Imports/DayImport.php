@@ -3,11 +3,11 @@
 namespace App\Imports;
 
 use App\Models\Exercise;
-use App\Models\ImportStatus;
 use App\Models\Set;
 use App\Models\Unit;
 use App\Models\Workout;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Str;
@@ -51,11 +51,12 @@ class DayImport implements ToCollection, WithCalculatedFormulas
                 $this->collectWorkoutNames($rows, $rowIndex);
             }
         } else {
-            ImportStatus::where([
-                'user_id' => $this->userId,
-                'job_id' => $this->jobId,
-            ])
-                ->increment('imported_days');
+            $importStatus = Cache::get('user-'. $this->userId . '-import-status');
+
+            $importStatus['imported_days']++;
+
+            Cache::put('user-'. $this->userId . '-import-status', $importStatus);
+
             foreach ($rows as $rowIndex => $row) {
                 $issetNextRow = isset($rows[$rowIndex + 1]);
                 $this->import($row, $issetNextRow, $rows, $rowIndex);

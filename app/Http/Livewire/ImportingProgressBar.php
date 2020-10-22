@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\ImportStatus;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class ImportingProgressBar extends Component
@@ -12,8 +12,10 @@ class ImportingProgressBar extends Component
     public function hydrate()
     {
         if (session('importing')) {
-            $importStatus = ImportStatus::latest()->first();
-            $this->progress = $importStatus ? round(($importStatus->imported_days * 100) / $importStatus->importable_days) : 100;
+            $importStatus = Cache::get('user-'. auth()->id() . '-import-status');
+
+            $this->progress = $importStatus ? round(($importStatus['imported_days'] * 100) / $importStatus['importable_days']) : 100;
+
             if (!$importStatus) {
                 session(['importing' => false]);
             }

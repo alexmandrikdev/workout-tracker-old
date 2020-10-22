@@ -4,13 +4,13 @@ namespace App\Jobs;
 
 use App\Imports\DaysImport;
 use App\Models\Exercise;
-use App\Models\ImportStatus;
 use App\Models\Set;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -40,10 +40,9 @@ class WorkoutImportJob implements ShouldQueue
     {
         $daysImport = new DaysImport($this->sheetNames, $this->days, $this->userId, $this->job->getJobId());
 
-        ImportStatus::create([
-            'job_id' => $this->job->getJobId(),
-            'user_id' => $this->userId,
+        Cache::put('user-'. $this->userId . '-import-status', [
             'importable_days' => $this->sheetNames->count(),
+            'imported_days' => 0
         ]);
 
         Excel::import($daysImport, $this->excelPath);
