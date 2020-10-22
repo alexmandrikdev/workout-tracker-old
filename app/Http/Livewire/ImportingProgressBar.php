@@ -16,7 +16,7 @@ class ImportingProgressBar extends Component
 
             $this->progress = $importStatus ? round(($importStatus['imported_days'] * 100) / $importStatus['importable_days']) : 100;
 
-            if (!$importStatus) {
+            if ($this->progress == 100) {
                 session(['importing' => false]);
                 Cache::forget('user-'. auth()->id() . '-import-status');
             }
