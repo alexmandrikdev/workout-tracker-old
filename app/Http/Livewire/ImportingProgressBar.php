@@ -18,6 +18,7 @@ class ImportingProgressBar extends Component
 
             if (!$importStatus) {
                 session(['importing' => false]);
+                Cache::forget('user-'. auth()->id() . '-import-status');
             }
         }
     }
