@@ -12,14 +12,18 @@
     @endif
 
     @if (!session('days'))
-        <form action="{{ route('workouts.import.getSheets') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" name="excel" id="customFile" accept=".xlsx"
-                    onchange="form.submit()">
-                <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-        </form>
+        @if (session('importing'))
+            <h3>An import is already running.</h3>
+        @else
+            <form action="{{ route('workouts.import.getSheets') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="excel" id="customFile" accept=".xlsx"
+                        onchange="form.submit()">
+                    <label class="custom-file-label" for="customFile">Choose a file</label>
+                </div>
+            </form>
+        @endif
     @else
         <form id="days-form" action="/workouts/import" method="POST" enctype="multipart/form-data">
             @csrf
