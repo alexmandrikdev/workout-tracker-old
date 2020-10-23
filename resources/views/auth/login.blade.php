@@ -42,7 +42,7 @@
                 </form>
             </div>
             <div class="card-footer text-center">
-                <a class="text-decoration-none text-light" href="/register">@lang("Don't have and account?")</a>
+                <a class="text-decoration-none text-light" href="/register">@lang("Don't have an account?")</a>
             </div>
         </div>
     </div>
