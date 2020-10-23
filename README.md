@@ -29,7 +29,7 @@ I created this project for myself to transfer my workout progress from an Excel 
 
 ## Workout page
 
-### The similar sets are stacked
+### The consecutive, same sets are stacked
 ![workout-page](readme/workout-page.png)
 
 # Future plans
