@@ -39,4 +39,4 @@ I created this project for myself to transfer my workout progress from an Excel 
 - Image upload for workouts
 
 # Database schema
- ![database-schema](readme/schema.png)
+ ![database-schema](readme/schema.PNG)
