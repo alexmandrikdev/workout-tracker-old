@@ -1,5 +1,7 @@
 <h1 align="center">Workout Tracker</h1>
 
+![from-to](readme/from-to.png)
+
 # About The Project
 
 I created this project for myself to transfer my workout progress from an Excel spreadsheet to a MySQL database.
